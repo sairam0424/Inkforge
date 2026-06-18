@@ -1,0 +1,13 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.turbo/
+.env
+.env.local
+.env.*
+!.env.example
+coverage/
+scratch-pad/
+.DS_Store
+# Generated article output — not source controlled
+content/articles/*.mdx
