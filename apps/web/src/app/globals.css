@@ -1,0 +1,196 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --bg-base: #07080d;
+  --bg-surface: #0d0f17;
+  --bg-elevated: #141826;
+  --border: #1f2433;
+  --border-strong: #2c3346;
+
+  /* Text */
+  --fg: #e9ecf5;
+  --fg-muted: #9aa3b8;
+  --fg-subtle: #747e99;
+
+  /* Accents */
+  --accent: #38e1ff;
+  --accent-strong: #0fb8db;
+  --violet: #a78bfa;
+  --green: #4ade80;
+  --amber: #fbbf24;
+  --red: #f87171;
+
+  /* Shape */
+  --radius-card: 14px;
+
+  /* Glow */
+  --glow-accent:
+    0 0 0 1px color-mix(in oklab, var(--accent) 35%, transparent),
+    0 0 24px -4px color-mix(in oklab, var(--accent) 45%, transparent);
+}
+
+/* ─── Tailwind v4 Theme Mapping ─────────────────────────────────────────── */
+@theme inline {
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-violet: var(--violet);
+  --color-green: var(--green);
+  --color-amber: var(--amber);
+  --color-red: var(--red);
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, "SF Mono", monospace;
+  --radius-card: var(--radius-card);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Focus ─────────────────────────────────────────────────────────────── */
+:focus-visible:not(.no-focus-ring) {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Keyframes ─────────────────────────────────────────────────────────── */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scroll-fade-up {
+  from { opacity: 0; translate: 0 20px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes terminal-blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orb-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50%       { transform: scale(1.08); opacity: 0.85; }
+}
+
+@keyframes stage-flash {
+  0%   { background-color: color-mix(in oklab, var(--green) 20%, transparent); }
+  100% { background-color: transparent; }
+}
+
+/* ─── Animation Classes ─────────────────────────────────────────────────── */
+.hero-rise {
+  opacity: 0;
+  animation: hero-rise 0.5s cubic-bezier(0.21, 0.47, 0.32, 0.98) forwards;
+}
+
+.scroll-reveal {
+  animation: scroll-fade-up linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 35%;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: terminal-blink 1s steps(1) infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+.orb-idle {
+  animation: orb-breathe 3.6s ease-in-out infinite;
+}
+
+.stage-flash {
+  animation: stage-flash 0.5s ease-out forwards;
+}
+
+/* ─── Utility Classes ────────────────────────────────────────────────────── */
+.card-surface {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.card-surface:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+/* ─── Grid Background ────────────────────────────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center center;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+          mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+
+/* ─── Reduced Motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero-rise { animation: none; opacity: 1; transform: none; }
+  .scroll-reveal { animation: none; opacity: 1; }
+  .terminal-cursor { animation: none; }
+  .animate-spin { animation: none; }
+  .animate-pulse { animation: none; }
+  .orb-idle { animation: none; }
+}
