@@ -9,5 +9,23 @@ dist/
 coverage/
 scratch-pad/
 .DS_Store
+
+# Next.js
+.next/
+out/
+
 # Generated article output — not source controlled
-content/articles/*.mdx
+content/articles/
+content/inputs/
+
+# Generated LinkedIn carousel slides & PDF (large binary files)
+content/published/linkedin/**/slides/
+content/published/linkedin/**/*.pdf
+
+# Velite output
+.velite/
+
+# Plans
+plans/
+
+.gstack/
