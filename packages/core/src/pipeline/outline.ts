@@ -53,7 +53,7 @@ RULES:
   const userContent = buildOutlineUserPrompt(input, params, enrichmentContext);
 
   const { text } = await generateText({
-    max_tokens: 2048,
+    max_tokens: 4096,
     system: systemPrompt,
     messages: [{ role: "user", content: userContent }],
   });
@@ -101,18 +101,41 @@ function buildOutlineUserPrompt(
   return parts.join("\n\n");
 }
 
+function repairTruncatedJSON(s: string): string {
+  // Close any unclosed strings, arrays, and objects so JSON.parse can recover
+  // from max_tokens truncation mid-output.
+  let repaired = s;
+  // If we're inside an unclosed string, close it
+  const quoteCount = (repaired.match(/(?<!\\)"/g) ?? []).length;
+  if (quoteCount % 2 !== 0) repaired += '"';
+  // Count open braces/brackets and close them in reverse order
+  const opens: string[] = [];
+  for (const ch of repaired) {
+    if (ch === "{" || ch === "[") opens.push(ch);
+    else if (ch === "}" || ch === "]") opens.pop();
+  }
+  for (const open of opens.reverse()) {
+    repaired += open === "{" ? "}" : "]";
+  }
+  return repaired;
+}
+
 function parseOutlineJSON(raw: string): unknown {
   // Strip any accidental markdown fences the LLM might add despite the prompt
   const cleaned = raw
     .replace(/^```(?:json)?\s*/m, "")
     .replace(/\s*```\s*$/m, "")
     .trim();
+  // 1. Try verbatim parse
   try {
     return JSON.parse(cleaned);
-  } catch {
-    // Try to extract a JSON object if there's surrounding prose
-    const match = cleaned.match(/\{[\s\S]*\}/);
-    if (match) return JSON.parse(match[0]);
-    throw new Error(`LLM returned invalid JSON for outline:\n${raw.slice(0, 500)}`);
+  } catch { /* try repair */ }
+  // 2. Try extracting the outermost JSON object
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  if (match) {
+    try { return JSON.parse(match[0]); } catch { /* try repair */ }
+    // 3. Attempt truncation repair on the extracted object
+    try { return JSON.parse(repairTruncatedJSON(match[0])); } catch { /* fall through */ }
   }
+  throw new Error(`LLM returned invalid JSON for outline (${cleaned.length} chars):\n${raw.slice(0, 300)}`);
 }

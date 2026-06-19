@@ -15,11 +15,12 @@ import { AnthropicBedrock } from "@anthropic-ai/bedrock-sdk";
 
 export type LlmProvider = "bedrock" | "anthropic";
 
-const PER_ATTEMPT_TIMEOUT_MS = 30_000; // longer for article generation than chat
+const PER_ATTEMPT_TIMEOUT_MS = 120_000; // 2 min — polish stage sends full assembled draft
 
 const BEDROCK_CHAIN = [
   "us.anthropic.claude-sonnet-4-6",
-  "us.anthropic.claude-opus-4-6-v1",
+  // Opus 4.6 excluded — requires explicit Bedrock model enablement per account.
+  // Re-add "us.anthropic.claude-opus-4-6-v1" once enabled in the AWS console.
   "us.anthropic.claude-haiku-4-5-20251001-v1:0",
 ];
 
@@ -88,6 +89,12 @@ export function makeClient(): Anthropic {
   return new Anthropic({ timeout: PER_ATTEMPT_TIMEOUT_MS });
 }
 
+const MODEL_DENIED_MARKERS = [
+  "is not authorized to perform",
+  "explicit deny",
+  "not authorized to invoke",
+];
+
 export function isFallbackEligible(err: unknown): boolean {
   if (err instanceof Anthropic.APIConnectionError) return true;
   const status = (err as { status?: number })?.status;
@@ -96,6 +103,11 @@ export function isFallbackEligible(err: unknown): boolean {
   if (status === 400) {
     const msg = String((err as { message?: string })?.message ?? "").toLowerCase();
     return MODEL_UNAVAILABLE_MARKERS.some((m) => msg.includes(m));
+  }
+  // 403: only fallback when it's a per-model explicit deny (not bad credentials)
+  if (status === 403) {
+    const msg = String((err as { message?: string })?.message ?? "").toLowerCase();
+    return MODEL_DENIED_MARKERS.some((m) => msg.includes(m));
   }
   return false;
 }
