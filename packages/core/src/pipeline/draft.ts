@@ -53,7 +53,7 @@ async function draftSection(
   const userContent = buildSectionUserPrompt(section, outline, input, params, precedingSummaries);
 
   const { text } = await generateText({
-    max_tokens: Math.max(512, section.wordBudget * 2),
+    max_tokens: Math.min(8192, Math.max(1024, section.wordBudget * 3)),
     system: systemPrompt,
     messages: [{ role: "user", content: userContent }],
   });

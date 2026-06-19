@@ -9,6 +9,7 @@ describe("ingest — notes mode", () => {
       params: { tone: "intermediate", format: "tutorial", length: "medium", mode: "oneshot" },
       tags: [],
       platforms: [],
+      category: "general",
     });
     expect(result.inputType).toBe("notes");
     expect(result.headings).toContain("My Guide");
@@ -23,6 +24,7 @@ describe("ingest — notes mode", () => {
       title: "My Override Title",
       tags: [],
       platforms: [],
+      category: "general",
     });
     expect(result.extractedTitle).toBe("My Override Title");
   });
@@ -34,6 +36,7 @@ describe("ingest — notes mode", () => {
       params: { tone: "intermediate", format: "tutorial", length: "medium", mode: "oneshot" },
       tags: [],
       platforms: [],
+      category: "general",
     });
     expect(result.codeSnippets.length).toBeGreaterThan(0);
     expect(result.codeSnippets[0]).toContain("const x = 1");
@@ -46,6 +49,7 @@ describe("ingest — notes mode", () => {
       params: { tone: "intermediate", format: "tutorial", length: "medium", mode: "oneshot" },
       tags: [],
       platforms: [],
+      category: "general",
     });
     expect(result.rawContent).not.toContain("---");
     expect(result.headings).toContain("Real Title");
@@ -60,6 +64,7 @@ describe("ingest — topic mode", () => {
       params: { tone: "senior", format: "explainer", length: "comprehensive", mode: "oneshot" },
       tags: [],
       platforms: [],
+      category: "general",
     });
     expect(result.inputType).toBe("topic");
     expect(result.rawContent).toContain("RAFT");
@@ -72,6 +77,7 @@ describe("ingest — topic mode", () => {
       params: { tone: "senior", format: "explainer", length: "medium", mode: "oneshot" },
       tags: [],
       platforms: [],
+      category: "general",
     });
     expect(result.extractedTags).toContain("distributed-systems");
   });
@@ -85,6 +91,7 @@ describe("ingest — code mode", () => {
       params: { tone: "intermediate", format: "showcase", length: "medium", mode: "oneshot" },
       tags: [],
       platforms: [],
+      category: "general",
     });
     expect(result.inputType).toBe("code");
     expect(result.headings).toContain("streamWithFallback");

@@ -1,12 +1,12 @@
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 import { computeReadingTime } from "../modes/index.js";
-import type { Outline, GenerationParams, ArticleOutput, EmitResult, Platform } from "../schema/index.js";
+import type { Outline, GenerationParams, ArticleOutput, EmitResult, Platform, Category } from "../schema/index.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-// packages/core/src/pipeline/ → packages/core/
-const PACKAGE_ROOT = resolve(__dirname, "../../..");
+// Resolve output paths relative to wherever the CLI is invoked from (process.cwd()),
+// NOT relative to this compiled file's location. This means INKFORGE_CONTENT_DIR=content/articles
+// resolves to <cwd>/content/articles — predictable regardless of package structure.
+const CWD = process.cwd();
 
 /**
  * Serialise ArticleOutput to MDX frontmatter + body and write to both sinks.
@@ -20,6 +20,8 @@ export function emit(
   params: GenerationParams,
   platforms: Platform[],
   date: string,
+  category: Category = "general",
+  rawInput?: string,        // original notes/topic/code that produced this article
 ): EmitResult {
   const wordCount = countWords(polishedBody);
   const readingTime = computeReadingTime(wordCount);
@@ -38,30 +40,41 @@ export function emit(
     tone: params.tone,
     format: params.format,
     length: params.length,
+    category,
     platforms,
     body: bodyWithoutTitle,
   };
 
   const mdx = buildMdx(article);
-  const filename = `${outline.slug}.mdx`;
+  // Primary sink uses .md — plain markdown, publishable anywhere without MDX tooling.
+  // Anvilry mirror keeps .mdx since Velite requires it.
+  const filename = `${outline.slug}.md`;
+  const anvilryFilename = `${outline.slug}.mdx`;
 
-  // Primary sink
-  const primaryDir = resolve(
-    PACKAGE_ROOT,
-    process.env.INKFORGE_CONTENT_DIR ?? "../../content/articles",
-  );
+  // Primary sink — articles go into content/articles/<category>/<slug>.mdx
+  const baseContentDir = resolve(CWD, process.env.INKFORGE_CONTENT_DIR ?? "content/articles");
+  const primaryDir = resolve(baseContentDir, category);
   ensureDir(primaryDir);
   const primaryPath = resolve(primaryDir, filename);
   writeFileSync(primaryPath, mdx, "utf-8");
+
+  // Input source sink — save raw input to content/inputs/<category>/<slug>.md
+  // This ensures the original notes are never lost and can be regenerated.
+  if (rawInput) {
+    const inputsBase = baseContentDir.replace(/articles$/, "inputs");
+    const inputDir = resolve(inputsBase, category);
+    ensureDir(inputDir);
+    writeFileSync(resolve(inputDir, `${outline.slug}.md`), rawInput, "utf-8");
+  }
 
   // Anvilry mirror sink (optional)
   let anvilryPath: string | undefined;
   const anvilryDir = process.env.INKFORGE_ANVILRY_NOTES_DIR;
   if (anvilryDir) {
-    const absAnvilryDir = resolve(PACKAGE_ROOT, anvilryDir);
+    const absAnvilryDir = resolve(CWD, anvilryDir);
     if (existsSync(absAnvilryDir)) {
       ensureDir(absAnvilryDir);
-      anvilryPath = resolve(absAnvilryDir, filename);
+      anvilryPath = resolve(absAnvilryDir, anvilryFilename);
       writeFileSync(anvilryPath, mdx, "utf-8");
     }
   }
@@ -81,6 +94,7 @@ function buildMdx(article: ArticleOutput): string {
     `tone: ${article.tone}`,
     `format: ${article.format}`,
     `length: ${article.length}`,
+    `category: ${article.category}`,
     `wordCount: ${article.wordCount}`,
     `readingTime: ${article.readingTime}`,
     "generatedBy: inkforge",
