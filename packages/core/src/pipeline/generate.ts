@@ -52,7 +52,7 @@ export async function generate(
   const polished = await polish(assembled, outline, request.params);
 
   onProgress?.({ stage: "emit" });
-  const emitResult = emit(polished, outline, request.params, request.platforms, date);
+  const emitResult = emit(polished, outline, request.params, request.platforms, date, request.category, request.content);
 
   return { emitResult, outline };
 }

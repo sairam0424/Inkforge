@@ -14,6 +14,15 @@ export const GenerationParamsSchema = z.object({
   mode: ModeSchema.default("oneshot"),
 });
 
+export const CategorySchema = z.enum([
+  "system-design",
+  "typescript",
+  "react",
+  "ai-engineering",
+  "career",
+  "general",
+]);
+
 export const GenerationRequestSchema = z.object({
   inputType: InputTypeSchema,
   content: z.string().min(1, "Content cannot be empty"),
@@ -22,6 +31,7 @@ export const GenerationRequestSchema = z.object({
   title: z.string().optional(),
   tags: z.array(z.string()).default([]),
   platforms: z.array(PlatformSchema).default([]),
+  category: CategorySchema.default("general"),
 });
 
 export const OutlineSectionSchema = z.object({
@@ -52,6 +62,7 @@ export const ArticleOutputSchema = z.object({
   tone: ToneSchema,
   format: FormatSchema,
   length: LengthSchema,
+  category: CategorySchema,
   platforms: z.array(PlatformSchema),
   body: z.string(),
 });
@@ -79,6 +90,7 @@ export type Length = z.infer<typeof LengthSchema>;
 export type Mode = z.infer<typeof ModeSchema>;
 export type InputType = z.infer<typeof InputTypeSchema>;
 export type Platform = z.infer<typeof PlatformSchema>;
+export type Category = z.infer<typeof CategorySchema>;
 export type GenerationParams = z.infer<typeof GenerationParamsSchema>;
 export type GenerationRequest = z.infer<typeof GenerationRequestSchema>;
 export type OutlineSection = z.infer<typeof OutlineSectionSchema>;

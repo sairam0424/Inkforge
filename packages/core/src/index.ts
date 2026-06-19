@@ -18,11 +18,13 @@ export type {
   Mode,
   InputType,
   Platform,
+  Category,
 } from "./schema/index.js";
 
 export {
   GenerationRequestSchema,
   GenerationParamsSchema,
+  CategorySchema,
 } from "./schema/index.js";
 
 // LLM utilities (for publisher integrations)

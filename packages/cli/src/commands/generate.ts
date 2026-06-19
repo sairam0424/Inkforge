@@ -24,6 +24,7 @@ export function registerGenerateCommand(program: Command): void {
     .option("--title <title>", "Override article title")
     .option("--tags <tags>", "Comma-separated tags")
     .option("--platforms <platforms>", "Comma-separated platforms: devto,hashnode", "")
+    .option("--category <category>", "system-design | typescript | react | ai-engineering | career | general", "general")
     .option("--date <date>", "Publication date (YYYY-MM-DD), defaults to today")
     .action(async (opts) => {
       const chalk = (await import("chalk")).default;
@@ -81,6 +82,7 @@ export function registerGenerateCommand(program: Command): void {
         title: opts.title,
         tags: opts.tags ? opts.tags.split(",").map((t: string) => t.trim()) : [],
         platforms,
+        category: opts.category ?? "general",
       });
 
       if (!requestResult.success) {
@@ -133,7 +135,7 @@ export function registerGenerateCommand(program: Command): void {
       console.log("\n" + chalk.bold("━".repeat(56)));
       console.log(chalk.bold.white(outline.title));
       console.log(chalk.dim(`Slug: ${emitResult.slug}`));
-      console.log(chalk.dim(`Words: ${emitResult.wordCount} · Read: ${emitResult.readingTime} min`));
+      console.log(chalk.dim(`Category: ${opts.category ?? "general"} · Words: ${emitResult.wordCount} · Read: ${emitResult.readingTime} min`));
       console.log(chalk.dim(`Tags: ${outline.tags.join(", ")}`));
       console.log("\n" + chalk.green("Files written:"));
       console.log("  " + chalk.underline(emitResult.primaryPath));
