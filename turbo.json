@@ -3,7 +3,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["src/**", "package.json", "tsconfig.json"],
-      "outputs": ["dist/**"],
+      "outputs": ["dist/**", ".next/**"],
       "cache": true
     },
     "test": {
