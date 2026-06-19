@@ -1,0 +1,86 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in Inkforge
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report. Please fill in all fields — it helps us reproduce and fix the issue faster.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run `inkforge generate --topic "..." --tone senior`
+        2. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the full error output or stack trace.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected package
+      options:
+        - "@inkforge/core (pipeline, LLM, RAG, publishers)"
+        - "@inkforge/cli (generate, publish, list)"
+        - "@inkforge/web (web UI)"
+        - "Other / Unknown"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Inkforge version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: "20.x"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: llm-provider
+    attributes:
+      label: LLM Provider
+      options:
+        - "AWS Bedrock"
+        - "Anthropic (direct API)"
+        - "Not applicable"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: OS, any relevant env config (no secrets), logs, etc.
