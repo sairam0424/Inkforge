@@ -48,7 +48,9 @@ Flag debt kills on-call teams. Atlassian had 4,000+ active flags and engineers c
 
 10 flags create 1,024 possible system states. 50 flags create more states than atoms in the observable universe. Your feature flag system is not a toggle board. It is the runtime nervous system of your product. Build it like one.
 
-Full architecture breakdown with diagrams in the first comment.
+Full article with architecture diagrams and production war stories:
+
+https://open.substack.com/pub/sairam0000/p/feature-flags-at-scale-the-complete
 
 #SystemDesign #FeatureFlags #DistributedSystems #SoftwareEngineering #ProductionEngineering
 
@@ -57,18 +59,6 @@ Full architecture breakdown with diagrams in the first comment.
 ## Step 3 — Post
 
 Click **Post**.
-
-## Step 4 — Add first comment immediately after posting
-
-Paste this as the FIRST comment (within 30 seconds of posting):
-
-```
-Full article with architecture diagrams, TypeScript SDK implementation, and production war stories from Google, Meta, Netflix, and Uber:
-
-Dev.to: https://dev.to/sai_ram_0000/feature-flags-at-scale-designing-a-distributed-control-system-for-production-behavior-2p30
-
-Substack: https://open.substack.com/pub/sairam0000/p/feature-flags-at-scale-the-complete
-```
 
 ---
 
