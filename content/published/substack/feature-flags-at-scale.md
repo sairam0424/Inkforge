@@ -12,21 +12,40 @@ word_count: ~4200
 ---
 
 <!--
-  !! STOP — DO NOT PASTE THE .md FILE INTO SUBSTACK !!
-  =====================================================
-  Substack does NOT accept Markdown. Asterisks and # symbols paste as
-  literal characters. This is confirmed by 102-agent deep research (June 2026).
-
-  USE THE HTML FILE INSTEAD:
-    content/published/substack/feature-flags-at-scale.html
-
-  Workflow:
-  1. Open feature-flags-at-scale.html in your browser (double-click it)
-  2. Cmd+A → Cmd+C (select all, copy)
-  3. In Substack editor body: Cmd+V (paste)
-  4. All formatting will render correctly (HTML clipboard = TipTap-compatible)
-
-  This .md file is kept as a reference only.
+  !! CONFIRMED SUBSTACK PASTE WORKFLOW (verified by Sairam, June 2026) !!
+  ========================================================================
+  Substack does NOT accept pasted Markdown OR pasted HTML source.
+  
+  THE ONLY WORKFLOW THAT WORKS:
+  
+  1. Publish the Medium version first (medium.com → import from URL or paste)
+     File: content/published/medium/feature-flags-at-scale.md
+     
+  2. Open the LIVE rendered Medium article in your browser
+     (the published URL, e.g. medium.com/@sairam/feature-flags-...)
+     
+  3. Cmd+A → Cmd+C on the rendered Medium page
+     (browser puts rendered rich text on clipboard, NOT raw markdown)
+     
+  4. In Substack editor body → Cmd+V
+     Headings, bold, bullets, blockquotes, code all transfer correctly
+     because Medium renders clean HTML that Substack's TipTap can parse
+     
+  5. After pasting into Substack:
+     - Delete any Medium header chrome that pasted (byline, claps bar, etc.)
+     - Add cover image manually
+     - Set title in Substack's title field (not in body)
+     - Append footer: "Originally published at sairam.dev/notes/..."
+       (Substack has NO canonical URL field — this footer is the only workaround)
+     - Publish or schedule
+  
+  WHY THIS WORKS:
+  The browser copies rendered HTML (text/html MIME type) — Substack's TipTap
+  editor accepts this. Raw markdown and HTML source files fail because they
+  paste as plain text / code blocks respectively.
+  
+  NOTE: feature-flags-at-scale.html was an earlier attempt that DOES NOT WORK
+  — pasting an HTML file pastes source code as a code block. Ignore that file.
 -->
 
 <!-- =========================================================
