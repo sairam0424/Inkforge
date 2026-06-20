@@ -25,7 +25,11 @@ export async function publishToDevto(
       title: article.title,
       body_markdown: article.body,
       published: opts?.published ?? false,
-      tags: article.tags.slice(0, 4),
+      // Dev.to tags: alphanumeric only, no hyphens/spaces, max 4 tags, max 20 chars each
+      tags: article.tags
+        .map((t: string) => t.replace(/[-\s]/g, "").toLowerCase().slice(0, 20))
+        .filter((t: string) => /^[a-z0-9]+$/.test(t))
+        .slice(0, 4),
       ...(canonicalUrl ? { canonical_url: canonicalUrl } : {}),
     },
   };
