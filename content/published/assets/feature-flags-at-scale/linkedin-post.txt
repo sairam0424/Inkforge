@@ -1,0 +1,23 @@
+One un-deleted feature flag cost Knight Capital $440 million in 45 minutes.
+
+That is not a cautionary tale about feature flags. It is a cautionary tale about what happens when you treat feature flags as config files instead of what they actually are at scale: a distributed control system for production behavior.
+
+I just published a deep-dive on how the companies that got this right — Google, Meta, Netflix, Uber — all converged on the same architecture independently.
+
+Here is what that architecture looks like.
+
+Two planes, not one. The Control Plane is slow and safe: it validates rules, stores state, handles conflicts. The Data Plane is fast and local: it runs entirely in-process, evaluates flags from a local cache, and never blocks user traffic on a remote call. This separation is non-negotiable at scale.
+
+Kill switches come first. Before any percentage rollout, before any user targeting — the kill switch. No userId required, no context needed, just a boolean from local cache. Uber used this to kill surge pricing globally in under 30 seconds during a production incident.
+
+Use hash(userId) % 100, never random(). Random gives different results on every evaluation. The same user gets different experiences on different servers. Deterministic hashing gives you sticky assignment, consistent UX, and reproducible experiments.
+
+Auto-ramp is not a feature, it is a safety system. Meta Gatekeeper watches error rate, latency, and crash signals in real time and advances rollout percentage automatically when metrics stay green. A flag can go from 0.1% to 100% overnight with zero engineer involvement — and roll back instantly if anything degrades.
+
+Flag debt kills on-call teams. Atlassian had 4,000+ active flags and engineers could no longer reason about live system state during incidents. Every flag needs an owner, a TTL, and a removal ticket from day one. The Knight Capital flag that caused the $440M loss was deprecated. It was just never deleted.
+
+10 flags create 1,024 possible system states. 50 flags create more states than atoms in the observable universe. Your feature flag system is not a toggle board. It is the runtime nervous system of your product. Build it like one.
+
+Full architecture breakdown with diagrams in the first comment.
+
+#SystemDesign #FeatureFlags #DistributedSystems #SoftwareEngineering #ProductionEngineering

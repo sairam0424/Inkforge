@@ -2,9 +2,9 @@
 slug: feature-flags-at-scale
 title: "Feature Flags at Scale: The Complete Engineering Guide"
 platform: substack
-status: draft
-published_date:
-published_url:
+status: live
+published_date: 2026-06-21
+published_url: https://open.substack.com/pub/sairam0000/p/feature-flags-at-scale-the-complete
 canonical_url: https://sairam.dev/notes/feature-flags-at-scale-distributed-control-system
 article_path: content/articles/system-design/feature-flags-at-scale-distributed-control-system.md
 reading_time: 15
