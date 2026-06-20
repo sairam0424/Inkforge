@@ -8,7 +8,7 @@ published_url:
 canonical_url: https://sairam.dev/notes/feature-flags-at-scale-distributed-control-system
 article_devto: https://dev.to/sai_ram_0000/feature-flags-at-scale-designing-a-distributed-control-system-for-production-behavior-2p30
 article_substack: https://open.substack.com/pub/sairam0000/p/feature-flags-at-scale-the-complete
-carousel_slides: 10
+carousel_slides: 13
 carousel_pdf: slides/carousel.pdf
 ---
 
@@ -86,3 +86,6 @@ Substack: https://open.substack.com/pub/sairam0000/p/feature-flags-at-scale-the-
 | 08 | slides/slide-08.png | Stat | 125,899,906,842,... — Flag States |
 | 09 | slides/slide-09.png | List | Flag Hygiene Rules |
 | 10 | slides/slide-10.png | CTA | Build the Control Plane. Not Just the Config. |
+| 11 | slides/slide-11.png | Case Study | Netflix Trebuchet — Kill Switches at the Edge |
+| 12 | slides/slide-12.png | War Story | The $0 Bug That Cost 3 Days (Fintech Hash Seed) |
+| 13 | slides/slide-13.png | All Companies | Every Major Tech Company Uses the Same Playbook |
