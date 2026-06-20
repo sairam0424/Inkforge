@@ -12,15 +12,21 @@ word_count: ~4200
 ---
 
 <!--
-  PUBLISHING INSTRUCTIONS
-  ========================
-  1. Go to substack.com → New Post
-  2. Switch editor to "Markdown" mode (top right dropdown)
-  3. Copy ONLY the content between the START and END markers below
-  4. Paste into the Substack editor body
-  5. Set title separately in the Title field (do not include it in the body)
-  6. Add subtitle in the Subtitle field
-  7. Set cover image
+  !! STOP — DO NOT PASTE THE .md FILE INTO SUBSTACK !!
+  =====================================================
+  Substack does NOT accept Markdown. Asterisks and # symbols paste as
+  literal characters. This is confirmed by 102-agent deep research (June 2026).
+
+  USE THE HTML FILE INSTEAD:
+    content/published/substack/feature-flags-at-scale.html
+
+  Workflow:
+  1. Open feature-flags-at-scale.html in your browser (double-click it)
+  2. Cmd+A → Cmd+C (select all, copy)
+  3. In Substack editor body: Cmd+V (paste)
+  4. All formatting will render correctly (HTML clipboard = TipTap-compatible)
+
+  This .md file is kept as a reference only.
 -->
 
 <!-- =========================================================
