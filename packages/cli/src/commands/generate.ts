@@ -1,5 +1,5 @@
-import { readFileSync, existsSync, watch } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, existsSync, watch, statSync, readdirSync } from "node:fs";
+import { resolve, join, extname } from "node:path";
 import type { Command } from "commander";
 import {
   generate,
@@ -63,8 +63,36 @@ export function registerGenerateCommand(program: Command): void {
           console.error(chalk.red(`✗ Code path not found: ${codePath}`));
           process.exit(1);
         }
-        content = readFileSync(codePath, "utf-8");
-        filePaths.push(codePath);
+        const stat = statSync(codePath);
+        if (stat.isDirectory()) {
+          // Collect up to 10 source files from the directory (skip node_modules/dist)
+          const SKIP_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", ".git"]);
+          const CODE_EXTS = new Set([".ts", ".tsx", ".js", ".jsx", ".py", ".go", ".rs"]);
+          const collected: string[] = [];
+          const walk = (dir: string) => {
+            if (collected.length >= 10) return;
+            for (const entry of readdirSync(dir, { withFileTypes: true })) {
+              if (collected.length >= 10) break;
+              if (entry.isDirectory() && !SKIP_DIRS.has(entry.name)) {
+                walk(join(dir, entry.name));
+              } else if (entry.isFile() && CODE_EXTS.has(extname(entry.name))) {
+                collected.push(join(dir, entry.name));
+              }
+            }
+          };
+          walk(codePath);
+          if (!collected.length) {
+            console.error(chalk.red(`✗ No source files found in: ${codePath}`));
+            process.exit(1);
+          }
+          content = collected
+            .map((f) => `// File: ${f}\n${readFileSync(f, "utf-8")}`)
+            .join("\n\n");
+          filePaths.push(...collected);
+        } else {
+          content = readFileSync(codePath, "utf-8");
+          filePaths.push(codePath);
+        }
         inputType = "code";
       } else {
         console.error(chalk.red("✗ Provide one of --input, --topic, or --code"));
