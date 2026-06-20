@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `Makefile` at repo root — 27 targets across 9 groups (Setup · Build · Quality · Generate · Publish · Content · Cleanup · Extras)
+- `make help` auto-generated from inline `##` comments (Kubernetes awk pattern — stays current automatically)
+- `make generate TOPIC="..." TONE=senior` wraps full STORM pipeline with sensible defaults and guard macros
+- `make ci` mirrors GitHub Actions locally (install → build → test → typecheck → security-scan)
+- `make env-check` prints green/red status for every required environment variable
+- `-include .env` + `export` auto-bridges `.env` credentials to all recipe shells
+
 ## [0.1.1] - 2026-06-20
 
 ### Added
