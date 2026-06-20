@@ -1,3 +1,7 @@
+I was once on-call at 2am, staring at a dashboard full of red, and the first thing my lead asked was not "what broke" — it was "which flags are on right now?"
+
+We did not have a good answer. That was the problem.
+
 One un-deleted feature flag cost Knight Capital $440 million in 45 minutes.
 
 That is not a cautionary tale about feature flags. It is a cautionary tale about what happens when you treat feature flags as config files instead of what they actually are at scale: a distributed control system for production behavior.
