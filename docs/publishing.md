@@ -4,9 +4,9 @@
 
 | Platform | Method | API Support | Notes |
 |---|---|---|---|
-| **sairam.dev (Anvilry)** | Auto-mirror on generate | ✅ Native | Velite picks up `.mdx` on `pnpm content` |
+| **sairam.dev (Anvilry)** | Auto-mirror on generate | ✅ Native | Velite picks up `.md` + `.mdx` on `pnpm content` |
 | **Dev.to** | `inkforge publish --platform devto` | ✅ REST API | Requires `DEVTO_API_KEY` |
-| **Hashnode** | `inkforge publish --platform hashnode` | ✅ GraphQL v2 | Requires `HASHNODE_API_KEY` + `HASHNODE_PUBLICATION_ID` |
+| **Hashnode** | Manual paste | ❌ API decommissioned (2026-06) | `gql.hashnode.com` shut down — no replacement API yet |
 | **Medium** | Manual paste via `medium.com/p/import` | ❌ Deprecated | Import from URL preserves formatting |
 | **Substack** | Manual paste | ❌ No API | Add attribution line at bottom |
 | **LinkedIn** | Manual upload (PDF carousel) | ❌ No public API | Use generated `linkedin-carousel-*.pdf` |
@@ -21,8 +21,8 @@ Always publish in this order to establish canonical authority:
 1. Anvilry (sairam.dev)     ← sets the canonical source
        ↓ wait for deploy (~2 min)
 2. Medium                   ← import from URL → canonical auto-set
-3. Dev.to                   ← canonical_url field in API call
-4. Hashnode                 ← originalArticleURL field in API call
+3. Dev.to                   ← canonical_url field in API call (automated)
+4. Hashnode                 ← manual paste (API decommissioned 2026-06)
 5. Substack / LinkedIn      ← copy-paste with attribution
 ```
 
@@ -83,11 +83,16 @@ Frontmatter fields sent:
 
 ## Hashnode Publishing
 
-```bash
-inkforge publish --slug your-slug --platform hashnode
-```
+> **API decommissioned.** Hashnode shut down `gql.hashnode.com` in June 2026. No replacement public API has been announced. `inkforge publish --platform hashnode` throws a clear error directing you here.
 
-Uses GraphQL `publishPost` mutation. Requires both `HASHNODE_API_KEY` and `HASHNODE_PUBLICATION_ID` (find your publication ID in Hashnode dashboard → Settings).
+**Manual workflow (until API is restored):**
+1. Copy article body from `content/articles/<category>/<slug>.md` (everything below frontmatter)
+2. Go to **https://hashnode.com** → your blog → **Write**
+3. Paste the article body, set title, tags, and cover image
+4. In **SEO settings**: set canonical URL to `INKFORGE_CANONICAL_BASE/<slug>`
+5. Publish as draft first, review, then publish live
+
+Keep `HASHNODE_API_KEY` and `HASHNODE_PUBLICATION_ID` in `.env` — they will be used automatically if/when Hashnode restores API access.
 
 ---
 
