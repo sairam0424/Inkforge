@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, watch } from "node:fs";
 import { resolve } from "node:path";
 import type { Command } from "commander";
 import {
@@ -26,12 +26,18 @@ export function registerGenerateCommand(program: Command): void {
     .option("--platforms <platforms>", "Comma-separated platforms: devto,hashnode", "")
     .option("--category <category>", "system-design | typescript | react | ai-engineering | career | general", "general")
     .option("--date <date>", "Publication date (YYYY-MM-DD), defaults to today")
+    .option("--watch", "Watch --input file and regenerate on every save")
     .action(async (opts) => {
       const chalk = (await import("chalk")).default;
       const ora = (await import("ora")).default;
 
       if (!isConfigured()) {
         console.error(chalk.red("✗ LLM not configured. Set BEDROCK_ACCESS_KEY_ID/BEDROCK_SECRET_ACCESS_KEY or ANTHROPIC_API_KEY."));
+        process.exit(1);
+      }
+
+      if (opts.watch && !opts.input) {
+        console.error(chalk.red("✗ --watch requires --input <file>"));
         process.exit(1);
       }
 
@@ -69,85 +75,130 @@ export function registerGenerateCommand(program: Command): void {
         ? opts.platforms.split(",").map((p: string) => p.trim()).filter((p: string) => ["devto", "hashnode"].includes(p))
         : [];
 
-      const requestResult = GenerationRequestSchema.safeParse({
-        inputType,
-        content,
-        filePaths: filePaths.length ? filePaths : undefined,
-        params: {
-          tone: opts.tone,
-          format: opts.format,
-          length: opts.length,
-          mode: opts.mode,
-        },
-        title: opts.title,
-        tags: opts.tags ? opts.tags.split(",").map((t: string) => t.trim()) : [],
-        platforms,
-        category: opts.category ?? "general",
-      });
+      const runGeneration = async (currentContent: string) => {
+        const requestResult = GenerationRequestSchema.safeParse({
+          inputType,
+          content: currentContent,
+          filePaths: filePaths.length ? filePaths : undefined,
+          params: {
+            tone: opts.tone,
+            format: opts.format,
+            length: opts.length,
+            mode: opts.mode,
+          },
+          title: opts.title,
+          tags: opts.tags ? opts.tags.split(",").map((t: string) => t.trim()) : [],
+          platforms,
+          category: opts.category ?? "general",
+        });
 
-      if (!requestResult.success) {
-        console.error(chalk.red("✗ Invalid options:"), requestResult.error.flatten().fieldErrors);
-        process.exit(1);
-      }
-
-      const request = requestResult.data;
-
-      // RAG enrichment for notes mode
-      let enrichmentContext: string | undefined;
-      if (inputType === "notes") {
-        const spinner = ora({ text: "Indexing knowledge base…", color: "cyan" }).start();
-        try {
-          const { ingest } = await import("@inkforge/core");
-          const normalised = (ingest as (r: typeof request) => ReturnType<typeof ingest>)(request);
-          const index = buildNoteIndex();
-          enrichmentContext = buildEnrichmentContext(normalised, index);
-          spinner.succeed(`Knowledge base indexed (${index.size} chunks)`);
-        } catch {
-          spinner.warn("Knowledge base indexing skipped");
+        if (!requestResult.success) {
+          console.error(chalk.red("✗ Invalid options:"), requestResult.error.flatten().fieldErrors);
+          return;
         }
-      }
 
-      // Stage spinner
-      let spinner = ora({ color: "cyan" }).start();
-      const stageLabels: Record<GenerationProgress["stage"], string> = {
-        ingest: chalk.cyan("Ingesting input…"),
-        outline: chalk.cyan("Generating outline…"),
-        draft: chalk.cyan("Drafting sections…"),
-        polish: chalk.cyan("Polishing…"),
-        emit: chalk.cyan("Writing MDX files…"),
+        const request = requestResult.data;
+
+        // RAG enrichment for notes mode
+        let enrichmentContext: string | undefined;
+        if (inputType === "notes") {
+          const spinner = ora({ text: "Indexing knowledge base…", color: "cyan" }).start();
+          try {
+            const { ingest } = await import("@inkforge/core");
+            const normalised = (ingest as (r: typeof request) => ReturnType<typeof ingest>)(request);
+            const index = buildNoteIndex();
+            enrichmentContext = buildEnrichmentContext(normalised, index);
+            spinner.succeed(`Knowledge base indexed (${index.size} chunks)`);
+          } catch {
+            spinner.warn("Knowledge base indexing skipped");
+          }
+        }
+
+        let spinner = ora({ color: "cyan" }).start();
+        const stageLabels: Record<GenerationProgress["stage"], string> = {
+          ingest: chalk.cyan("Ingesting input…"),
+          outline: chalk.cyan("Generating outline…"),
+          draft: chalk.cyan("Drafting sections…"),
+          polish: chalk.cyan("Polishing…"),
+          emit: chalk.cyan("Writing files…"),
+        };
+
+        try {
+          const result = await generate(request, {
+            enrichmentContext,
+            date: opts.date,
+            onProgress: (progress) => {
+              const label = stageLabels[progress.stage];
+              const detail = progress.detail ? chalk.dim(` [${progress.detail}]`) : "";
+              spinner.text = label + detail;
+              if (progress.stage === "emit") spinner = ora({ color: "green" }).start();
+            },
+          });
+
+          spinner.succeed(chalk.green("Article generated!"));
+
+          const { emitResult, outline } = result;
+
+          console.log("\n" + chalk.bold("━".repeat(56)));
+          console.log(chalk.bold.white(outline.title));
+          console.log(chalk.dim(`Slug: ${emitResult.slug}`));
+          console.log(chalk.dim(`Category: ${opts.category ?? "general"} · Words: ${emitResult.wordCount} · Read: ${emitResult.readingTime} min`));
+          console.log(chalk.dim(`Tags: ${outline.tags.join(", ")}`));
+          console.log("\n" + chalk.green("Files written:"));
+          console.log("  " + chalk.underline(emitResult.primaryPath));
+          if (emitResult.anvilryPath) {
+            console.log("  " + chalk.underline(emitResult.anvilryPath) + chalk.dim(" (Anvilry mirror)"));
+          }
+
+          if (platforms.length) {
+            console.log(chalk.dim(`\nPublish targets queued: ${platforms.join(", ")}`));
+            console.log(chalk.dim(`Run: inkforge publish --slug ${emitResult.slug} --platform ${platforms.join(" ")}`));
+          }
+
+          console.log(chalk.bold("━".repeat(56)) + "\n");
+
+          if (opts.watch) {
+            console.log(chalk.dim(`Watching ${resolve(opts.input)} for changes… (Ctrl+C to stop)\n`));
+          }
+        } catch (err) {
+          spinner.fail(chalk.red("Generation failed"));
+          console.error(chalk.red(err instanceof Error ? err.message : String(err)));
+          if (opts.watch) {
+            console.log(chalk.dim("Watching for next save…\n"));
+          }
+        }
       };
 
-      const result = await generate(request, {
-        enrichmentContext,
-        date: opts.date,
-        onProgress: (progress) => {
-          const label = stageLabels[progress.stage];
-          const detail = progress.detail ? chalk.dim(` [${progress.detail}]`) : "";
-          spinner.text = label + detail;
-          if (progress.stage === "emit") spinner = ora({ color: "green" }).start();
-        },
+      // Run once immediately
+      await runGeneration(content);
+
+      if (!opts.watch) return;
+
+      // Watch mode — debounce file saves, re-read and regenerate
+      const inputPath = resolve(opts.input);
+      let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+      let isGenerating = false;
+
+      watch(inputPath, () => {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+          if (isGenerating) {
+            console.log(chalk.dim("Generation in progress — skipping save…"));
+            return;
+          }
+          isGenerating = true;
+          console.log(chalk.cyan(`\n↻  File changed — regenerating…`));
+          const updated = readFileSync(inputPath, "utf-8");
+          await runGeneration(updated);
+          isGenerating = false;
+        }, 500);
       });
 
-      spinner.succeed(chalk.green("Article generated!"));
-
-      const { emitResult, outline } = result;
-
-      console.log("\n" + chalk.bold("━".repeat(56)));
-      console.log(chalk.bold.white(outline.title));
-      console.log(chalk.dim(`Slug: ${emitResult.slug}`));
-      console.log(chalk.dim(`Category: ${opts.category ?? "general"} · Words: ${emitResult.wordCount} · Read: ${emitResult.readingTime} min`));
-      console.log(chalk.dim(`Tags: ${outline.tags.join(", ")}`));
-      console.log("\n" + chalk.green("Files written:"));
-      console.log("  " + chalk.underline(emitResult.primaryPath));
-      if (emitResult.anvilryPath) {
-        console.log("  " + chalk.underline(emitResult.anvilryPath) + chalk.dim(" (Anvilry mirror)"));
-      }
-
-      if (platforms.length) {
-        console.log(chalk.dim(`\nPublish targets queued: ${platforms.join(", ")}`));
-        console.log(chalk.dim(`Run: inkforge publish --slug ${emitResult.slug} --platform ${platforms.join(" ")}`));
-      }
-
-      console.log(chalk.bold("━".repeat(56)) + "\n");
+      // Keep process alive
+      process.stdin.resume();
+      process.on("SIGINT", () => {
+        console.log(chalk.dim("\nWatch mode stopped."));
+        process.exit(0);
+      });
     });
 }
