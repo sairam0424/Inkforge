@@ -1,7 +1,7 @@
 ---
 slug: how-i-traced-one-browser-request-from-keystroke-to-rendered-page
 title: "How I Traced One Browser Request from Keystroke to Rendered Page"
-published_url: https://sairamugge.hashnode.dev/how-i-traced-one-browser-request-from-keystroke-to-rendered-page
+published_url: https://sairam0000.hashnode.dev/how-i-traced-one-browser-request-from-keystroke-to-rendered-page-www-google-com
 published_date: 2026-06-20
 canonical_url: https://anvilry.vercel.app/notes/how-i-traced-one-browser-request-from-keystroke-to-rendered-page
 status: live
