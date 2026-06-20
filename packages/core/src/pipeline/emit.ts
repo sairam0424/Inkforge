@@ -46,10 +46,10 @@ export function emit(
   };
 
   const mdx = buildMdx(article);
-  // Primary sink uses .md — plain markdown, publishable anywhere without MDX tooling.
-  // Anvilry mirror keeps .mdx since Velite requires it.
+  // Both sinks use .md — plain markdown works on all platforms and Velite
+  // accepts .md via the widened notes glob pattern (notes/**/*.{md,mdx}).
   const filename = `${outline.slug}.md`;
-  const anvilryFilename = `${outline.slug}.mdx`;
+  const anvilryFilename = `${outline.slug}.md`;
 
   // Primary sink — articles go into content/articles/<category>/<slug>.mdx
   const baseContentDir = resolve(CWD, process.env.INKFORGE_CONTENT_DIR ?? "content/articles");
