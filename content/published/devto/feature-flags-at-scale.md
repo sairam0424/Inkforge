@@ -3,8 +3,8 @@ slug: feature-flags-at-scale
 title: "Feature Flags at Scale: The Complete Engineering Guide"
 platform: devto
 status: draft
-published_date:
-published_url:
+published_date: 2026-06-20
+published_url: https://dev.to/sai_ram_0000/feature-flags-at-scale-designing-a-distributed-control-system-for-production-behavior-36j4-temp-slug-5932739
 canonical_url: https://sairam.dev/notes/feature-flags-at-scale-distributed-control-system
 article_path: content/articles/system-design/feature-flags-at-scale-distributed-control-system.md
 devto_tags: [featureflags, systemdesign, devops, distributedsystems]
