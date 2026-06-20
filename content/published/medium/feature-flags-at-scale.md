@@ -30,6 +30,34 @@ In 2012, Knight Capital lost $440 million in 45 minutes because of a feature fla
 
 Not a bug in a trading algorithm. Not a network partition. A stale flag, a redeployment, and dormant code that silently reactivated. By the time the team understood what was happening, the damage was irreversible. That incident is the most expensive argument ever made for treating feature flags as first-class engineering infrastructure — not config files, not booleans, but a **distributed control plane** for production behavior.
 
+---
+
+**TL;DR — What this article covers:**
+
+- Feature flags at scale are a **distributed control plane**, not environment variables
+- The single constraint that drives every architectural decision: **no remote call on the evaluation path**
+- Why push-based distribution beats polling at scale (thundering herd math)
+- How kill switches work — and why Uber can flip one globally in under 30 seconds
+- Meta's auto-ramp: 0.1% → 100% overnight with zero engineer involvement
+- The flag debt trap: 50 flags = more possible states than atoms in the observable universe
+- How Google, Meta, Netflix, and Uber independently converged on the same architecture
+
+*Reading time: 13 minutes. Senior engineer level.*
+
+---
+
+**Quick facts before we dive in:**
+
+- 🏦 **$440M** — Knight Capital's loss from one un-deleted feature flag (2012, 45 minutes)
+- ⚡ **<1ms** — evaluation latency when flags are local (vs. 10–50ms for a remote call)
+- 🔄 **30–60 seconds** — Meta Gatekeeper's intentional propagation window (staleness is fine, staleness-during-outage is not)
+- 🛑 **30 seconds** — Uber's global kill switch response window across all regions
+- 📊 **1,024 states** — what 10 boolean flags produce. 50 flags = more states than atoms in the observable universe
+- 🏢 **4,000+** — flags Atlassian accumulated before their on-call rotation broke down
+- 🔁 **4 companies** — Google, Meta, Netflix, Uber — arrived at the same architecture independently
+
+---
+
 ## The Counterintuitive Truth
 
 Most engineers encounter feature flags as a simple if-then in their first codebase. That model works fine at low scale. At millions of requests per second, it becomes dangerous.
@@ -158,6 +186,34 @@ GIF_PLACEHOLDER_EVALUATION_FLOW: Animated flowchart: Request → SDK local cache
 The convergence across Google, Meta, Netflix, and Uber to the same architecture isn't coincidence. It's the solution space collapsing under the same set of constraints: sub-millisecond evaluation, 99.99% availability, push-based distribution, lifecycle discipline.
 
 Build the same way. Delete flags aggressively. Your 3am on-call rotation will thank you.
+
+---
+
+**Key takeaways — the checklist:**
+
+✅ **Local evaluation only** — no RPC on the request path, ever
+
+✅ **Push-based distribution** — pull creates thundering herds at scale
+
+✅ **Kill switches evaluated first** — before any targeting rule, before any user context
+
+✅ **Per-flag fail policy** — fail-closed or fail-open declared at creation, not at runtime
+
+✅ **Deterministic rollouts** — `hash(flagKey + userId) % 100`, same seed everywhere
+
+✅ **Per-request memoization** — one traversal per flag per request, not one per call site
+
+✅ **Exposure events at every evaluation** — the foundation of experiment analysis
+
+✅ **Owner + expiry date required at creation** — enforced by automation, not convention
+
+✅ **Automated cleanup PR when flag hits 100% stable** — dead code doesn't survive on inertia
+
+✅ **Explicit `depends_on` in the schema** — implicit flag dependencies are 3am archaeology problems
+
+---
+
+**The test:** Can your on-call engineer disable a production feature globally in under 60 seconds without touching code or config files? If yes — you have a kill switch. If no — you have a boolean in a YAML file.
 
 ---
 
