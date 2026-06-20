@@ -7,17 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-20
+
 ### Added
-- `inkforge generate --watch`: watches `--input` file with 500ms debounce, re-runs full pipeline on every save
+- `inkforge generate --watch` — watches `--input` file with 500ms debounce, re-runs full pipeline on every save; skips overlapping runs; Ctrl+C exits cleanly
+- Published tracking records for both articles across Dev.to and Hashnode
 
 ### Fixed
-- CI: removed duplicate pnpm `version:` key (conflicts with `packageManager` in `package.json`); bumped Node to 22
-- `emit.ts`: Anvilry mirror now writes `.md` (not `.mdx`); Velite notes pattern updated to `*.{md,mdx}`
-- `publish.ts`: article resolved by `.md` path scanning all category subfolders; YAML array parsing fixed for `tags`/`platforms`
+- CI: removed duplicate pnpm `version:` key (conflicts with `packageManager` in package.json); bumped Actions Node from 20 to 22
+- `emit.ts`: Anvilry mirror now writes `.md` — Velite notes pattern widened to `*.{md,mdx}`
+- `publish.ts`: resolves article by `.md` path, scans all category subfolders, parses YAML arrays correctly
+- `publishers/devto.ts`: sanitize tags — strip hyphens/spaces, alphanumeric only, max 4 × 20 chars (fixes 422 errors)
 
 ### Changed
-- Hashnode publisher (`publishToHashnode`) now throws a clear deprecation error — `gql.hashnode.com` was decommissioned June 2026, no replacement API exists
-- All docs updated to reflect Hashnode manual-only workflow
+- `publishers/hashnode.ts`: `gql.hashnode.com` decommissioned June 2026 — throws clear deprecation error, no silent failure
+- All docs updated: Hashnode marked manual-only, `--watch` flag added to CLI reference, cross-post order updated
 
 ## [0.1.0] - 2026-06-19
 
