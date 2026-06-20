@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `inkforge generate --watch`: watches `--input` file with 500ms debounce, re-runs full pipeline on every save
+
+### Fixed
+- CI: removed duplicate pnpm `version:` key (conflicts with `packageManager` in `package.json`); bumped Node to 22
+- `emit.ts`: Anvilry mirror now writes `.md` (not `.mdx`); Velite notes pattern updated to `*.{md,mdx}`
+- `publish.ts`: article resolved by `.md` path scanning all category subfolders; YAML array parsing fixed for `tags`/`platforms`
+
+### Changed
+- Hashnode publisher (`publishToHashnode`) now throws a clear deprecation error — `gql.hashnode.com` was decommissioned June 2026, no replacement API exists
+- All docs updated to reflect Hashnode manual-only workflow
+
 ## [0.1.0] - 2026-06-19
 
 ### Added

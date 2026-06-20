@@ -47,18 +47,21 @@ inkforge generate \
 | `--title` | Override auto-generated title | — |
 | `--tags` | Comma-separated tags | auto-inferred |
 | `--date` | `YYYY-MM-DD` | today |
+| `--watch` | Re-generate on every file save (requires `--input`) | off |
 
 ### `inkforge publish`
 
 Publish a generated article to external platforms.
 
 ```bash
-# Publish as draft
+# Publish as draft to Dev.to
 inkforge publish --slug how-dns-works --platform devto
 
-# Publish live
-inkforge publish --slug how-dns-works --platform devto hashnode --published
+# Publish live to Dev.to
+inkforge publish --slug how-dns-works --platform devto --published
 ```
+
+> **Hashnode:** `gql.hashnode.com` was decommissioned in June 2026 — no public API exists. Publish to Hashnode manually at https://hashnode.com. See [docs/publishing.md](../../docs/publishing.md).
 
 ### `inkforge list`
 

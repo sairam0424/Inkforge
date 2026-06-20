@@ -68,8 +68,7 @@ ANTHROPIC_API_KEY=...
 ## Publishers
 
 ```typescript
-import { publishToDevto }   from '@inkforge/core/publishers/devto';
-import { publishToHashnode } from '@inkforge/core/publishers/hashnode';
+import { publishToDevto } from '@inkforge/core/publishers/devto';
 
 const result = await publishToDevto(article, {
   published: false,
@@ -77,6 +76,8 @@ const result = await publishToDevto(article, {
 });
 // → { id: number, url: string }
 ```
+
+> **Hashnode:** `publishToHashnode` is exported but throws immediately — `gql.hashnode.com` was decommissioned in June 2026. Publish to Hashnode manually until a replacement API is available.
 
 ## Tests
 
