@@ -1,6 +1,6 @@
 {
   "name": "@inkforge/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Inkforge CLI — generate and publish articles from the terminal",
   "bin": {
