@@ -2,7 +2,7 @@
 slug: tombstone-v1-launch
 title: "I Built Tombstone Because I Was Tired of 2am Flag Incidents"
 platform: medium
-status: draft
+status: backlog
 published_date:
 published_url:
 canonical_url: https://anvilry.vercel.app/notes/tombstone-v1-launch

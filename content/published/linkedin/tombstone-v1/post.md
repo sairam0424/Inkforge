@@ -2,8 +2,8 @@
 slug: tombstone-v1
 title: "Tombstone v1.0 — LinkedIn Carousel"
 platform: linkedin
-status: draft
-published_date:
+status: live
+published_date: 2026-06-27
 published_url:
 canonical_url:
 carousel_slides: 15
