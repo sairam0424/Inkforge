@@ -19,6 +19,20 @@ I built Tombstone to make that incident impossible.
 
 ## What Tombstone Is
 
+### Five Patterns Feature Flags Enable
+
+**Dark Launch** — ship code to production with the flag off. Deploy first, release when you decide.
+**Canary Release** — roll out to 1% of users, monitor for 30 minutes, ramp up. Never bet 100% of users on an untested change.
+**Kill Switch** — disable a broken feature in 10 seconds without a rollback deploy.
+
+| Method | Time | Risk |
+|--------|------|------|
+| Kill switch (flag toggle) | ~10 seconds | Zero — broken code stays deployed but unreachable |
+| Deploy rollback | 20+ minutes | Non-zero — rollback commits can introduce new bugs |
+
+**A/B Testing** — show two versions, measure which converts better. Statistical confidence, not gut feeling.
+**Access Control** — enable for beta users or specific teams only. Change targeting rules, not code.
+
 Tombstone is a self-hosted production intelligence platform for feature flags at scale. It's designed specifically for the operational failure modes that existing tooling ignores: flag key reuse, stale flag accumulation, and the "what changed?" loop that costs you an hour every time production breaks.
 
 **Architecture: 8 services**
@@ -107,6 +121,19 @@ func (e *TombstoneEntry) ComputeHash() string {
     return hex.EncodeToString(sum[:])
 }
 ```
+
+### The Flag Lifecycle: DRAFT → TOMBSTONED
+
+Every flag moves through six stages. Miss any of them and you have a Knight Capital waiting to happen.
+
+DRAFT → ACTIVE (dark launch) → ROLLING OUT → FULL ROLLOUT → CLEANUP → TOMBSTONED
+
+The critical ramp pattern for canary releases:
+1% (30 min monitor) → 10% (1 hour monitor) → 50% (2 hours) → 100%
+
+The circuit breaker watches the whole way. At 5% errors over 100 requests, it auto-rolls back — no engineer needed.
+
+The gap most teams miss: **FULL ROLLOUT → TOMBSTONED**. A flag hits 100%, everyone moves on, and six months later nobody knows what `dark_launch_v2` controls. Tombstone's flag-cleanup loop detects flags at 100% rollout for 30+ days and fires a cleanup signal automatically.
 
 ## Core Innovation 2: Causal Incident Correlation
 
@@ -311,6 +338,39 @@ console.log(result.variationKey); // "treatment-a"
 ```
 
 The WASM constraint forced the evaluation pipeline to be fully deterministic with no I/O. This is good design regardless of WASM — deterministic evaluation is testable, reproducible, and debuggable.
+
+### Testing Flags Without Flaky Tests
+
+One underrated pain point with feature flags: they make tests flaky. If your unit test calls a real flag-api, its result changes when someone changes a flag in production. `TombstoneTestClient` solves this — it implements the same interface as the real client but never makes network calls. Every flag returns exactly what you tell it to. Three test cases are mandatory for any flag-gated code: flag on, flag off, and flag missing (safe default).
+
+```typescript
+// Never connect unit tests to a real flag-api — tests must be deterministic
+import { TombstoneTestClient } from "@tombstone/core/testing";
+
+describe("Checkout rendering", () => {
+  let testClient: TombstoneTestClient;
+
+  beforeEach(() => {
+    testClient = new TombstoneTestClient();
+    setTombstoneClient(testClient); // inject via your DI pattern
+  });
+
+  it("renders new checkout when flag is on", async () => {
+    testClient.setFlag("checkout-v2", true);
+    expect(renderCheckout(mockCart)).toContain("NewCheckout");
+  });
+
+  it("renders old checkout when flag is off", async () => {
+    testClient.setFlag("checkout-v2", false);
+    expect(renderCheckout(mockCart)).toContain("OldCheckout");
+  });
+
+  it("falls back to safe default when flag is missing", async () => {
+    // TombstoneTestClient returns safe default (false) for unset flags
+    expect(renderCheckout(mockCart)).toContain("OldCheckout");
+  });
+});
+```
 
 ## Blast Radius Scoring
 

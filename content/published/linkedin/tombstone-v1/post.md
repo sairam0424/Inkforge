@@ -6,7 +6,7 @@ status: draft
 published_date:
 published_url:
 canonical_url:
-carousel_slides: 13
+carousel_slides: 14
 format_note: "Carousel/PDF = 7.00% engagement (best on LinkedIn). Upload as PDF document post."
 ---
 
@@ -16,7 +16,7 @@ format_note: "Carousel/PDF = 7.00% engagement (best on LinkedIn). Upload as PDF 
 
 1. Go to linkedin.com → Start a post
 2. Click the **document icon** (not the image icon)
-3. Upload: `tombstone-v1-carousel.pdf`
+3. Upload `carousel.pdf` (14 slides, ~2.7MB)
 4. Set document title: **Tombstone v1.0 — Production Intelligence for Feature Flags**
 5. Paste caption from `post-caption.txt`
 6. Click **Post**
@@ -40,6 +40,7 @@ format_note: "Carousel/PDF = 7.00% engagement (best on LinkedIn). Upload as PDF 
 | 11 | Deep Dive | The SDK Layer | TypeScript + Python + Edge + WASM |
 | 12 | Story | Why "Tombstone"? | Name origin |
 | 13 | CTA | v1.0.0. Self-hosted. | Open source, everything local |
+| 14 | slide-14.png | Lifecycle | Every flag has a lifecycle. Most teams stop at FULL ROLLOUT. |
 
 ---
 
@@ -359,3 +360,27 @@ Full article with architecture deep-dive:
 
 **Visual note:**
 Teal on dark. `make dev` in a large JetBrains Mono code block — this is the terminal moment. Keep it clean, confident. No fuss.
+
+---
+
+## Slide 14 — Flag Lifecycle
+
+**Type:** Education / Lifecycle
+
+**Headline:**
+Every flag has a lifecycle.
+Most teams stop here. ↓
+
+**Body:**
+DRAFT
+→ ACTIVE (dark launch)
+→ ROLLING OUT
+→ FULL ROLLOUT  ← most teams stop
+→ CLEANUP
+→ TOMBSTONED ✓
+
+The gap between FULL ROLLOUT and TOMBSTONED
+is how Knight Capital happened.
+
+**Visual note:**
+Amber (#f59e0b) arrow/marker at FULL ROLLOUT warning. TOMBSTONED stage glows teal (#00d4aa). Vertical flow of stage pills. Clean, minimal.

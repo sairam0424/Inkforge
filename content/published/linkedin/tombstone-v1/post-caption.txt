@@ -18,6 +18,8 @@ What Changed: when production breaks, Tombstone automatically runs causal correl
 
 Circuit breaker auto-rollback: if a flag causes error rate to cross 5% over 100 requests, Tombstone rolls it back automatically. No engineer needed. No escalation. You wake up to a report, not an alert.
 
+And every flag has a lifecycle — Tombstone enforces the full arc from dark launch to tombstoned key, so nothing ever gets stuck at 100% rollout for six months with no owner.
+
 Everything else: blast radius scoring (BLOCKED / HIGH / MEDIUM / LOW) before every change. Four-eyes approval plus break-glass. A 3-model ML ensemble. Eight Go and Python services. TypeScript + Python + React + Edge + WASM SDKs. An MCP server so your AI agents can query flag state. A VS Code extension. And `make dev` to start the whole thing.
 
 Full architecture deep-dive: [ARTICLE_LINK]

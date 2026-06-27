@@ -30,6 +30,7 @@ That incident made me build Tombstone.
 - Blast radius scoring, four-eyes approval, 3-model anomaly ensemble, Merkle-linked audit trail
 - WASM-ready eval engine, TypeScript + Python + React SDKs, MCP server, IDE extensions
 - Runs with `make dev` — five minutes to a full local stack
+- Feature flags enable 5 distinct patterns: dark launch, canary release, kill switch, A/B testing, and access control — Tombstone makes all five production-safe
 - It's open source. Build it, break it, tell me what I got wrong.
 
 ---
@@ -49,6 +50,12 @@ The specific failure modes I kept hearing about:
 **When production breaks, correlation is manual.** You look at the error spike, you look at the deployment history, you look at the Slack #deploys channel. You try to remember if anyone mentioned a flag change in standup. It takes 20-40 minutes of investigation to narrow down something that should be automatic.
 
 I couldn't find existing tooling that addressed all three of these together. So I built it.
+
+Before getting into Tombstone's specific innovations, it's worth naming the five distinct patterns feature flags enable in production, because Tombstone is designed to make all five safe — not just the simple ones.
+
+**Dark launch** — ship code to production, flag off. The feature exists but no user sees it. You decouple deploy from release. **Canary release** — enable the flag for 1–5% of users first, monitor for errors, ramp gradually. **Kill switch** — a flag you flip to instantly disable a broken feature without a deploy. **A/B testing** — expose different user cohorts to different variants, measure outcomes statistically. **Access control** — gate a feature behind a user tier, plan, or beta group.
+
+Each of these patterns has a different failure mode. Tombstone's design is shaped by all five.
 
 ## The Knight Capital Problem
 
@@ -81,6 +88,10 @@ The first time I ran this against that original 2am incident, it returned the ri
 The third piece is the one I'm most personally relieved exists.
 
 The circuit breaker monitors error rates per flag evaluation. When a flag-gated code path crosses a configurable threshold — default is 5% error rate over 100 requests — it automatically rolls back to the safe default value. No PagerDuty, no engineer needed, no 2am phone call.
+
+**Kill switch: 10 seconds. Deploy rollback: 20+ minutes.**
+
+The difference isn't just speed. A kill switch carries zero risk of introducing new bugs in a rollback commit. A deploy rollback requires the full CI pipeline and touches real code under pressure.
 
 More importantly, it fires the incident correlation pipeline automatically when it trips. So when you wake up and look at your phone, the message isn't just "circuit breaker tripped on flag X." It's "circuit breaker tripped on flag X, here are the three most likely causes, here's the rollback that already happened, here's the blast radius that was affected."
 
@@ -167,7 +178,7 @@ Flags die, or they should. They should have a lifecycle, a defined end, a clear 
 
 There's also something fitting about the word for a category of incident that nobody quite has a name for — the 2am call that takes an hour to diagnose because nobody knows which flags are active, who changed them, and why. That kind of incident deserves its own mythology. Tombstone is mine.
 
-Version 1 is out. It works. It's opinionated in some places — the four-eyes approval model, the forced blast radius scoring, the non-negotiable tombstone registry — and deliberately so. These are decisions I'd want a system to make for me at 2am, when I'm tired and scared and someone's asking me questions I don't have answers to.
+Tombstone v2.2.0 with Dashboard v1.0.0 is out — the first stable, self-hosted release. It's opinionated in some places — the four-eyes approval model, the forced blast radius scoring, the non-negotiable tombstone registry — and deliberately so. These are decisions I'd want a system to make for me at 2am, when I'm tired and scared and someone's asking me questions I don't have answers to.
 
 If you've been in that call, you know exactly which decisions I mean.
 

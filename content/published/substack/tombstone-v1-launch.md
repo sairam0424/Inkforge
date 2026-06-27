@@ -9,6 +9,10 @@ canonical_url: https://anvilry.vercel.app/notes/tombstone-v1-launch
 paste_workflow: "SUBSTACK PASTE: Copy rendered Dev.to article from browser → Cmd+A → Cmd+C → paste into Substack editor body (NOT the markdown file)"
 ---
 
+Before I explain what Tombstone does, here is why feature flags matter at all. There are really five situations where they are the right tool: dark launch (ship code before users see it), canary release (1% of users first, then ramp), kill switch (turn off a broken feature in 10 seconds — more on that in a moment), A/B testing (measure which variant actually converts), and access control (enable for beta users without touching code). Every other feature flag platform handles these five cases. What none of them handle is what comes after — when you have 200 flags and something breaks and you don't know which one caused it. That's what Tombstone is for.
+
+When production is on fire, a kill switch toggle takes 10 seconds. A deploy rollback takes 20 minutes and risks introducing new bugs. That gap — 10 seconds versus 20 minutes — is the entire argument for feature flags as a runtime safety mechanism.
+
 There's a particular kind of dread that sets in at 2am when your on-call phone goes off and you open the dashboard to find it entirely red.
 
 I know that dread well. I've been in it more than once. But one incident in particular changed me.
@@ -61,6 +65,8 @@ But the services are just infrastructure. The interesting part is the three thin
 
 **First: tombstoning.** Permanent key retirement, append-only Merkle-linked registry, cryptographically verifiable audit chain. Every flag key that ever existed in your system is traceable. The archive has never been edited, and you can prove it.
 
+There's a lifecycle to every flag that most teams ignore. A flag starts as a draft, gets dark-launched (deployed but invisible), rolls out gradually, eventually reaches 100% of users, and then — crucially — needs to be cleaned up and tombstoned. The step most teams skip is that last one. A flag at 100% rollout for six months that nobody has tombstoned is a Knight Capital waiting to happen. Tombstone's governance loop detects these automatically and creates cleanup reminders before they become incidents.
+
 **Second: causal incident correlation.** When production breaks, the intelligence service automatically queries the audit log for every flag change in the preceding 30 minutes. It ranks them by a combination of time proximity (recent changes rank higher, via exponential decay) and blast radius impact. Within 200 milliseconds, it returns the top three most likely causal changes — who made them, what they changed, when, and a one-click rollback link.
 
 I ran this against the incident that started this whole project. It returned the right flag as the top candidate. It would have turned a 47-minute investigation into a 3-minute response.
@@ -91,7 +97,7 @@ When you disable a flag, you're asserting that the false/off state is safe. That
 
 Rolling back to the last known safe value is different. It means "return to the state that was recently stable." It's not an assertion about the nature of the flag, just about its recent history. It's a conservative, reversible action. I think it's the right default for an automated system operating at 2am.
 
-What I'm less certain about: the four-eyes approval model for high-blast-radius changes. I built it because I believe in it — two humans reviewing a change that could affect 40% of your traffic is the right call. But I've heard from a few engineers in early testing that it feels like too much friction for teams that move fast and have high deployment cadences. I don't think the answer is to remove it, but I think the UX around it needs to make it feel lighter and more fluid. This is the main thing I'm iterating on in v1.1.
+What I'm less certain about: the four-eyes approval model for high-blast-radius changes. I built it because I believe in it — two humans reviewing a change that could affect 40% of your traffic is the right call. But I've heard from a few engineers in early testing that it feels like too much friction for teams that move fast and have high deployment cadences. I don't think the answer is to remove it, but I think the UX around it needs to make it feel lighter and more fluid. This is the main thing I'm iterating on in v2.2.0 (Dashboard v1.0.0).
 
 <!-- GIF: blast radius score showing HIGH tier, four-eyes approval flow completing -->
 
@@ -129,7 +135,7 @@ It's MIT licensed. Self-hosted by design — I made a deliberate choice not to o
 
 The Merkle-linked append-only audit trail was built with compliance in mind. SOC 2, HIPAA-adjacent systems, fintech — anywhere you need to demonstrate that your audit record hasn't been retroactively modified, the cryptographic chain provides that guarantee. You can give an auditor a root hash and a range of events and they can verify independently that the log is intact.
 
-I haven't written the compliance documentation yet (that's on the v1.1 list), but the foundations are there.
+I haven't written the compliance documentation yet (that's on the v2.2.0 (Dashboard v1.0.0) list), but the foundations are there.
 
 ## What I Learned Building This
 
@@ -145,6 +151,4 @@ This is the design philosophy I want to carry forward: build systems that make t
 
 ---
 
-What's your relationship with feature flags in production? Have you been through an incident where a flag was the root cause — or where figuring out whether a flag was the root cause took longer than it should have? I'd genuinely like to hear. Comment below or reply to this post.
-
-The flag graveyard is real and almost everyone is managing one. I want to understand what it looks like in different organizations and what tooling gaps still exist that Tombstone doesn't cover.
+What's the longest a feature flag has lived in your codebase without being cleaned up? I've seen 18-month-old flags in payment flows. Tell me yours.
