@@ -24,4 +24,6 @@ Everything else: blast radius scoring (BLOCKED / HIGH / MEDIUM / LOW) before eve
 
 Full architecture deep-dive: [ARTICLE_LINK]
 
+GitHub (MIT licensed, self-hosted): https://github.com/sairam0424/Tombstone
+
 #FeatureFlags #SystemDesign #OpenSource #DevOps #ProductionEngineering
