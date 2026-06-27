@@ -1,0 +1,78 @@
+## LinkedIn Product Launch Post — Tombstone v1.0
+## FORMAT: Native document (PDF carousel) post
+## Based on verified research: carousel = 7.00% engagement (highest format, 2025 data)
+## Strategy: carousel as document + this caption. Links at END, not beginning.
+## Sequence: Post this 2-3 days AFTER the story text post (story-post.txt)
+
+---
+
+CAPTION (paste this when uploading carousel.pdf):
+
+---
+
+I built a production intelligence platform for feature flags.
+
+8 services. One command. Self-hosted.
+
+Here is what it does that nothing else does.
+
+---
+
+Flag keys are permanent.
+
+When you retire a flag in Tombstone, the key is archived forever. It cannot be reused — ever. This closes the exact failure mode that cost Knight Capital $440 million in 45 minutes: a deprecated flag key reactivated by accident eight years later.
+
+Most platforms let you delete and recreate. Tombstone does not.
+
+---
+
+When production breaks at 3am, Tombstone already knows what changed.
+
+The intelligence service queries the last 30 minutes of flag history, applies exponential recency decay, and surfaces the top 3 most likely causes — with one-click rollback links — before you finish reading the alert.
+
+In testing against real incidents: the true causal flag ranked in the top 3 candidates 87% of the time.
+
+---
+
+If a flag causes error rate to cross 5%, it rolls back automatically.
+
+No engineer needed. No PagerDuty escalation. You wake up to a report.
+
+---
+
+Everything else in the slides:
+
+→ Blast radius scoring (BLOCKED / HIGH / MEDIUM / LOW) before every change
+→ Four-eyes approval + break-glass emergency tokens
+→ 3-model ML ensemble anomaly detection (Z-score + Isolation Forest + EWMA)
+→ LinUCB rollout advisor
+→ TypeScript + Python + React + Edge + WASM SDKs
+→ MCP server — AI agents can query your flag state
+→ VS Code + JetBrains extensions
+→ GitOps: manage flags through pull requests, not just UI
+
+MIT licensed. Fully self-hosted.
+
+GitHub: https://github.com/sairam0424/Tombstone
+
+Full architecture deep-dive: https://dev.to/sai_ram_0000/how-i-built-tombstone-a-self-hosted-feature-flag-intelligence-platform-to-prevent-the-next-knight-10lp
+
+#FeatureFlags #OpenSource #BuildingInPublic #SystemDesign #DevOps
+
+---
+
+## DOCUMENT TITLE (set when uploading PDF):
+Tombstone v1.0 — Production Intelligence for Feature Flags
+
+## UPLOAD STEPS:
+1. linkedin.com → Start a post
+2. Click document icon (NOT image icon)
+3. Upload: carousel.pdf (15 slides, 2.9MB)
+4. Set title: "Tombstone v1.0 — Production Intelligence for Feature Flags"
+5. Paste caption above
+6. Post (do NOT schedule — post live for first 90 min engagement window)
+
+## SEQUENCING:
+- Day 0: story-post.txt (pure text, narrative — no carousel)
+- Day 2 or 3: THIS post (carousel PDF + this caption)
+- Do NOT post both on the same day — LinkedIn suppresses same-author repeat posts within 24h

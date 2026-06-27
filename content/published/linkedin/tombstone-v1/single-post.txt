@@ -1,0 +1,39 @@
+A few weeks ago I posted about how feature flags fail at scale.
+
+Knight Capital. $440M. 45 minutes. One flag key that was never properly archived.
+
+I wasn't writing about that as a cautionary tale.
+
+I was writing about it because I had lived a version of it.
+
+---
+
+I was once on call at 2am, staring at a dashboard full of red, and the first thing that came to mind wasn't "What broke?" — it was "Which flags are on right now?"
+
+I did not have a good answer. That was the problem.
+
+200+ flags across 12 services. No consolidated view. We dug through Slack, opened Confluence, made guesses. Eventually found the root cause — a flag key deleted and recreated six months later by a different team, old Redis-cached targeting rules never invalidated.
+
+47 minutes of investigation. Should have been a 5-minute rollback.
+
+---
+
+That post described the problem. This is what I built to solve it.
+
+Tombstone is a self-hosted production intelligence platform for feature flags. Three things it does that nothing else does:
+
+Flag keys are permanently archived when retired. Cannot be reused — ever. The Knight Capital failure mode, closed by design at the database level.
+
+When production breaks, it automatically correlates the last 30 minutes of flag changes, ranks them by recency decay, and surfaces the top 3 suspects with one-click rollback links. The suspects are ready before you finish reading the alert.
+
+If a flag causes error rate to cross 5%, it rolls back automatically. No engineer needed. You wake up to a report, not an escalation.
+
+Everything else is in the slides →
+
+MIT licensed. Fully self-hosted. One command to start everything.
+
+GitHub: https://github.com/sairam0424/Tombstone
+
+Full story + architecture: https://open.substack.com/pub/sairam0000/p/i-built-tombstone-because-i-was-tired
+
+#FeatureFlags #OpenSource #BuildingInPublic #SystemDesign #DevOps

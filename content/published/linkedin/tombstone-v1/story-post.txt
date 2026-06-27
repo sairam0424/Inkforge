@@ -1,0 +1,45 @@
+A few weeks ago I wrote about how feature flags fail at scale.
+
+Knight Capital. $440M. 45 minutes. A flag key that was never properly archived, reused eight years later, and quietly activated dead trading code on one of nine servers.
+
+I wasn't writing about that incident as a cautionary tale.
+
+I was writing about it because I had lived a version of it.
+
+---
+
+2am. Dashboard red. My lead on the call, calm as always, asks the one question I couldn't answer:
+
+"Which flags are on right now?"
+
+200+ flags across 12 services. No consolidated answer. We dug through Slack threads, opened Confluence, made educated guesses. We eventually found the root cause — a flag key deleted and recreated six months later by a different team, the old Redis-cached targeting rules never invalidated.
+
+47 minutes of investigation. It should have been a 5-minute rollback.
+
+---
+
+That incident is why I wrote about feature flags at scale.
+
+And it is why I spent the next several months building Tombstone.
+
+Tombstone is the system I wish had existed that night.
+
+Three things it does that I couldn't find elsewhere:
+
+Flag keys are permanently archived when retired. They can never be reused. The Knight Capital failure mode, closed by design.
+
+When production breaks, it automatically correlates the last 30 minutes of flag changes against the incident timeline and surfaces the top 3 suspects — ranked, with one-click rollback links. Suspects ready before you've finished reading the alert.
+
+If a flag causes error rate to cross 5%, it rolls back automatically. You wake up to a report, not an escalation.
+
+Everything runs locally. One command. MIT licensed.
+
+The article on how I built it (and why the circuit breaker rolls back to "last known safe value" instead of just disabling the flag — that distinction matters more than it sounds):
+
+https://dev.to/sai_ram_0000/how-i-built-tombstone-a-self-hosted-feature-flag-intelligence-platform-to-prevent-the-next-knight-10lp
+
+And the original feature flags deep-dive that started all of this:
+
+https://open.substack.com/pub/sairam0000/p/feature-flags-at-scale-the-complete
+
+#FeatureFlags #OpenSource #BuildingInPublic #DevOps #SystemDesign

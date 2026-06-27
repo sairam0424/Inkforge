@@ -1,0 +1,29 @@
+I was once on call at 2am, staring at a dashboard full of red, and the first thing that came to mind wasn't "What broke?" — it was "Which flags are on right now?"
+
+I did not have a good answer. That was the problem.
+
+That silence lasted about 40 seconds. It felt longer.
+
+We eventually traced the incident to a flag that had been live for six months, owned by a team that had since reorganized, with no rollback procedure documented anywhere. We fixed it manually. It took two hours.
+
+I started building Tombstone the next week.
+
+---
+
+Tombstone is a self-hosted production intelligence platform for feature flags at scale. It ships with three things I could not find anywhere else.
+
+Tombstoning: when you retire a flag, the key is permanently archived and can never be reused. This closes the Knight Capital failure mode — the $440M, 45-minute disaster caused by a stale flag key that was deprecated but never deleted and then reused by accident eight years later. Tombstone makes that physically impossible.
+
+What Changed: when production breaks, Tombstone automatically runs causal correlation against the last 30 minutes of flag changes, applies exponential recency decay, and surfaces the top 3 candidates with rollback links. You open the incident board and the suspects are already ranked. No archaeology required.
+
+Circuit breaker auto-rollback: if a flag causes error rate to cross 5% over 100 requests, Tombstone rolls it back automatically. No engineer needed. No escalation. You wake up to a report, not an alert.
+
+And every flag has a lifecycle — Tombstone enforces the full arc from dark launch to tombstoned key, so nothing ever gets stuck at 100% rollout for six months with no owner.
+
+Everything else: blast radius scoring (BLOCKED / HIGH / MEDIUM / LOW) before every change. Four-eyes approval plus break-glass. A 3-model ML ensemble. Eight Go and Python services. TypeScript + Python + React + Edge + WASM SDKs. An MCP server so your AI agents can query flag state. A VS Code extension. And `make dev` to start the whole thing.
+
+Full architecture deep-dive: [ARTICLE_LINK]
+
+GitHub (MIT licensed, self-hosted): https://github.com/sairam0424/Tombstone
+
+#FeatureFlags #SystemDesign #OpenSource #DevOps #ProductionEngineering
