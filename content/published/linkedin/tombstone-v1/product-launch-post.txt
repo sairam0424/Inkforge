@@ -67,7 +67,7 @@ Tombstone v1.0 — Production Intelligence for Feature Flags
 ## UPLOAD STEPS:
 1. linkedin.com → Start a post
 2. Click document icon (NOT image icon)
-3. Upload: carousel.pdf (14 slides, 2.6MB)
+3. Upload: carousel.pdf (15 slides, 2.9MB)
 4. Set title: "Tombstone v1.0 — Production Intelligence for Feature Flags"
 5. Paste caption above
 6. Post (do NOT schedule — post live for first 90 min engagement window)

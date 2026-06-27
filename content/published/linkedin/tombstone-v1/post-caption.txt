@@ -1,6 +1,6 @@
-It was 2am. Every dashboard was red. My lead asked one question: "Which flags are on right now?"
+I was once on call at 2am, staring at a dashboard full of red, and the first thing that came to mind wasn't "What broke?" — it was "Which flags are on right now?"
 
-I had no answer. Neither did anyone else on the call.
+I did not have a good answer. That was the problem.
 
 That silence lasted about 40 seconds. It felt longer.
 
