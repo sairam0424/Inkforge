@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-06-27
+
+### Added
+
+#### Content pipeline
+- Tombstone v1.0 launch article (3,531 words, narrative/senior/comprehensive) — generated via STORM pipeline from personal on-call incident notes
+- Platform versions: Dev.to (live), Substack (live), Medium (backlog), Hashnode (backlog)
+- LinkedIn 15-slide HQ carousel at 2× pixel density (deviceScaleFactor=2) — 2.93MB PDF, all slides 170–260KB
+- LinkedIn carousel includes: new personal hook (slide 02), flag lifecycle DRAFT→TOMBSTONED (slide 14), USP vs competitors — LaunchDarkly/Unleash/GrowthBook (slide 15)
+- Cover image 1400×787px rendered via Playwright headless Chromium
+- GIF asset plan with Giphy search keywords for all 5 article sections
+- LinkedIn single combined post bridging feature-flags article → Tombstone launch (based on 104-agent deep research, carousel = 7.00% engagement)
+
+#### CLI fix
+- `inkforge generate --code <dir>` now walks directory trees (max 10 files), skipping `node_modules/dist/.next/.turbo/.git`, collecting `.ts/.tsx/.js/.jsx/.py/.go/.rs` with file-path headers
+
+#### DX
+- `Makefile` at repo root — 27 targets across 9 groups (Setup · Build · Quality · Generate · Publish · Content · Cleanup · Extras)
+- `make help` auto-generated from inline `##` comments (Kubernetes awk pattern)
+- `make generate TOPIC="..." TONE=senior` wraps full STORM pipeline with guard macros
+- `make ci` mirrors GitHub Actions locally
+- `make env-check` prints green/red status for every required environment variable
+- `-include .env` + `export` auto-bridges `.env` credentials to all recipe shells
+
+### Fixed
+- Dev.to publish: correct GitHub URL (`sairam0424/Tombstone`), correct npm package name (`@tombstone/core`), removed broken GIF placeholder images
+- All Tombstone articles: version references updated from v1.0.0 → v2.2.0 (Dashboard v1.0.0)
+
+### Content
+- Published tracking records for Tombstone v1.0 across Dev.to, Substack, LinkedIn
+- Feature flags article tracking updated: LinkedIn carousel ready, Medium/Hashnode backlog
+
 ## [0.1.1] - 2026-06-20
 
 ### Added
@@ -83,5 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Conventional Commits enforced
 - Branching strategy: `main` (releases) ← `develop` (integration) ← `feature/*`
 
-[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/sairam0424/Inkforge/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/sairam0424/Inkforge/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/sairam0424/Inkforge/releases/tag/v0.1.0
