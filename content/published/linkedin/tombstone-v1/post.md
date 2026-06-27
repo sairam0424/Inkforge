@@ -6,7 +6,7 @@ status: draft
 published_date:
 published_url:
 canonical_url:
-carousel_slides: 14
+carousel_slides: 15
 format_note: "Carousel/PDF = 7.00% engagement (best on LinkedIn). Upload as PDF document post."
 ---
 
@@ -41,6 +41,7 @@ format_note: "Carousel/PDF = 7.00% engagement (best on LinkedIn). Upload as PDF 
 | 12 | Story | Why "Tombstone"? | Name origin |
 | 13 | CTA | v1.0.0. Self-hosted. | Open source, everything local |
 | 14 | slide-14.png | Lifecycle | Every flag has a lifecycle. Most teams stop at FULL ROLLOUT. |
+| 15 | slide-15.png | USP | Every competitor asks the wrong question. |
 
 ---
 
