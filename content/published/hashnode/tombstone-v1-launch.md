@@ -53,8 +53,8 @@ Tombstone is a self-hosted production intelligence platform for feature flags at
 **Quick start:**
 
 ```bash
-git clone https://github.com/sairam/tombstone
-cd tombstone
+git clone https://github.com/sairam0424/Tombstone
+cd Tombstone
 make dev
 # First run: 3-5 min (image pulls)
 # Dashboard: http://localhost:3000
@@ -672,7 +672,7 @@ The flag-cleanup domain loop uses this analysis to generate cleanup tickets with
 
 ## Get Involved
 
-Repository: [github.com/sairam/tombstone](https://github.com/sairam/tombstone) — MIT licensed.
+Repository: [github.com/sairam0424/Tombstone](https://github.com/sairam0424/Tombstone) — MIT licensed.
 
 Issues and PRs welcome. Especially interested in:
 - Teams managing 1,000+ flags in production — what does your operational tooling look like?

@@ -2,9 +2,9 @@
 slug: tombstone-v1-launch
 title: "I Built Tombstone Because I Was Tired of 2am Flag Incidents"
 platform: devto
-status: draft
-published_date:
-published_url:
+status: draft-published
+published_date: 2026-06-27
+published_url: https://dev.to/sai_ram_0000/how-i-built-tombstone-a-self-hosted-feature-flag-intelligence-platform-to-prevent-the-next-knight-56ip-temp-slug-4254603
 canonical_url: https://anvilry.vercel.app/notes/tombstone-v1-launch
 tags: ["featureflags", "systemdesign", "opensource", "devops"]
 cover_image: assets/tombstone-v1/cover.png
@@ -18,7 +18,6 @@ It's 2am. My lead is on the call. The dashboard is red. She asks the one questio
 
 That night I started building Tombstone.
 
-![GIF: placeholder-01](gif-placeholder-01)
 
 ---
 
@@ -165,7 +164,6 @@ Critical design decision: the rollback action is "return to last known safe valu
 
 When the circuit breaker trips, it immediately fires the incident correlation pipeline — so the on-call engineer waking up doesn't just see "circuit breaker tripped," they see the ranked causal candidates and the rollback that already happened.
 
-![GIF: placeholder-02](gif-placeholder-02)
 
 ---
 
@@ -207,8 +205,8 @@ This runs in Cloudflare Workers, browsers, Node.js, and any other WASM runtime. 
 ## Quick Start
 
 ```bash
-git clone https://github.com/sairam/tombstone
-cd tombstone
+git clone https://github.com/sairam0424/Tombstone
+cd Tombstone
 make dev
 # Dashboard:  http://localhost:3000
 # Flag API:   http://localhost:8081
@@ -218,11 +216,11 @@ make dev
 ### TypeScript SDK
 
 ```bash
-npm install @tombstone/sdk
+npm install @tombstone/core
 ```
 
 ```typescript
-import { TombstoneClient } from '@tombstone/sdk';
+import { TombstoneClient } from '@tombstone/core';
 
 const client = new TombstoneClient({
   host: 'http://localhost:8081',
@@ -431,7 +429,7 @@ The dashboard UI needs work. It's functional React 19 but the UX isn't where I w
 
 ## Get Involved
 
-The repo is at [github.com/sairam/tombstone](https://github.com/sairam/tombstone). It's MIT licensed.
+The repo is at [github.com/sairam0424/Tombstone](https://github.com/sairam0424/Tombstone). It's MIT licensed.
 
 Issues, PRs, and honest feedback all welcome. Especially feedback from teams that have been through flag incidents — I'm interested in failure modes that Tombstone doesn't yet cover.
 
