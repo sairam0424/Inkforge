@@ -34,6 +34,6 @@ MIT licensed. Fully self-hosted. One command to start everything.
 
 GitHub: https://github.com/sairam0424/Tombstone
 
-Full architecture deep-dive: https://dev.to/sai_ram_0000/how-i-built-tombstone-a-self-hosted-feature-flag-intelligence-platform-to-prevent-the-next-knight-10lp
+Full story + architecture: https://open.substack.com/pub/sairam0000/p/i-built-tombstone-because-i-was-tired
 
 #FeatureFlags #OpenSource #BuildingInPublic #SystemDesign #DevOps
