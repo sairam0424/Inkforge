@@ -2,10 +2,9 @@
 slug: tombstone-v1-launch
 title: "I Built Tombstone Because I Was Tired of 2am Flag Incidents"
 platform: substack
-status: draft-on-devto
+status: live
 published_date: 2026-06-27
-published_url: https://dev.to/sai_ram_0000/i-built-tombstone-because-i-was-tired-of-2am-flag-incidents-story-2j8b-temp-slug-9889187
-devto_draft_id: 4006362
+published_url: https://open.substack.com/pub/sairam0000/p/i-built-tombstone-because-i-was-tired?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 canonical_url: https://anvilry.vercel.app/notes/tombstone-v1-launch
 paste_workflow: "SUBSTACK PASTE: Copy rendered Dev.to article from browser → Cmd+A → Cmd+C → paste into Substack editor body (NOT the markdown file)"
 ---

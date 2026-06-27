@@ -2,9 +2,9 @@
 slug: tombstone-v1-launch
 title: "I Built Tombstone Because I Was Tired of 2am Flag Incidents"
 platform: devto
-status: draft-published
+status: live
 published_date: 2026-06-27
-published_url: https://dev.to/sai_ram_0000/how-i-built-tombstone-a-self-hosted-feature-flag-intelligence-platform-to-prevent-the-next-knight-56ip-temp-slug-4254603
+published_url: https://dev.to/sai_ram_0000/how-i-built-tombstone-a-self-hosted-feature-flag-intelligence-platform-to-prevent-the-next-knight-10lp
 canonical_url: https://anvilry.vercel.app/notes/tombstone-v1-launch
 tags: ["featureflags", "systemdesign", "opensource", "devops"]
 cover_image: assets/tombstone-v1/cover.png
