@@ -2,9 +2,10 @@
 slug: tombstone-v1-launch
 title: "I Built Tombstone Because I Was Tired of 2am Flag Incidents"
 platform: substack
-status: draft
-published_date:
-published_url:
+status: draft-on-devto
+published_date: 2026-06-27
+published_url: https://dev.to/sai_ram_0000/i-built-tombstone-because-i-was-tired-of-2am-flag-incidents-story-2j8b-temp-slug-9889187
+devto_draft_id: 4006362
 canonical_url: https://anvilry.vercel.app/notes/tombstone-v1-launch
 paste_workflow: "SUBSTACK PASTE: Copy rendered Dev.to article from browser → Cmd+A → Cmd+C → paste into Substack editor body (NOT the markdown file)"
 ---
@@ -120,8 +121,8 @@ The 2/3 voting rule is doing a lot of work. I'm glad I didn't cut the feature.
 If any of this resonates — if you've been on that 2am call, if you've inherited a flag graveyard, if you've spent 45 minutes investigating an incident that should have taken 5 — I'd love for you to try Tombstone.
 
 ```
-git clone https://github.com/sairam/tombstone
-cd tombstone
+git clone https://github.com/sairam0424/Tombstone
+cd Tombstone
 make dev
 ```
 
