@@ -1,6 +1,6 @@
-I spent my first day on a new team grepping through 80,000 lines of code trying to understand where authentication worked.
+Across every project and team I've worked on, the first few days always went the same way. Not building. Not shipping. Grepping through tens of thousands of lines of code trying to answer one question: how does this system actually work?
 
-4 hours. Three teammates interrupted. Twelve dead ends. The code was fine. The tooling was the problem.
+The code was never the problem. The tooling was.
 
 I built trelix to fix this.
 
