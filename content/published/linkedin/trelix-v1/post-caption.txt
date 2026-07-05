@@ -14,6 +14,8 @@ The three things I'm most proud of:
 
 3. It works inside Claude Code, Cursor, and Windsurf via MCP in one command: `claude mcp add trelix -- trelix-mcp`
 
+4. Seven retrieval legs fused via Reciprocal Rank Fusion — BM25, vector, call graph, grep, file-summary semantic, SPLADE-Code, and multi-granularity. The right legs activate automatically per query.
+
 The core design decision I'd make again: zero infrastructure by default. The entire index — vectors, BM25, call graph, symbols — lives in a single SQLite file. Most developers don't want to run a vector database just to search their codebase.
 
 One thing 2 years of building AI infrastructure at Ascendion taught me: whether it's a multi-agent system automating workflows, a RAG pipeline generating product artifacts, or an LLM orchestration engine running in production — the first thing every AI system needs to do well is understand the codebase it's operating on. Code intelligence isn't a nice-to-have. It's the foundation. Humans and AI agents both need it before they can do anything meaningful with code.
