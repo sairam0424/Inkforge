@@ -15,6 +15,8 @@ Code has structure: call edges, import chains, type hierarchies, AST relationshi
 
 That day stuck with me. I kept running into the same pattern on different teams, different codebases, different languages. Every time I joined something new or came back to a project after six months away, the first few days were archaeology. Tracing calls manually. Reconstructing context that should have been queryable.
 
+I know this problem from both sides. At Ascendion I co-built AAVA Code — an AI coding plugin for VS Code used by 3K+ developers daily across 5+ client environments. Every new client onboarding meant day one was archaeology: unfamiliar codebase, no fast way to answer "how does X work?" without interrupting someone who knew.
+
 I built trelix to fix this.
 
 ## What trelix Is

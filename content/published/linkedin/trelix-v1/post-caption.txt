@@ -1,23 +1,23 @@
 I spent my first day on a new team grepping through 80,000 lines of code trying to understand where authentication worked.
 
-4 hours. Three teammates interrupted. Twelve dead ends. The code was fine. The tooling was the problem.
+4 hours. Three teammates interrupted. Twelve dead ends.
 
-I built trelix to fix this.
+I've lived this on both sides. At Ascendion I co-built AAVA Code — an AI coding plugin for VS Code with 3K+ daily users across 5+ client environments. Every new client onboarding, day one was the same: unfamiliar codebase, no fast way to answer "how does X work?" without interrupting someone. The tooling gap was consistent regardless of how good the code was.
 
-trelix indexes any codebase with Tree-sitter AST, then answers questions using hybrid BM25 + vector + call-graph search — fused via Reciprocal Rank Fusion across 7 retrieval legs. It works offline. No API key. Single SQLite file. Zero infrastructure.
+So I built trelix — an open-source code intelligence engine that indexes any codebase and answers questions about it using hybrid BM25 + vector + call-graph search. It works offline. No API key. Single SQLite file. Zero infra.
 
 The three things I'm most proud of:
 
 1. GitHub PR review: `trelix review --pr owner/repo#42 --post-comments` — fetches the diff, retrieves codebase context for each changed hunk, runs an LLM review, and posts findings back to GitHub in one command.
 
-2. Federated search: `trelix search-all "query"` — search across all your repos simultaneously with a TTL cache that hits ~90% for typical debugging sessions.
+2. Federated search: `trelix search-all "query"` — search across all your repos simultaneously. Built the same fan-out + RRF-merge pattern I used in production multi-agent systems at Ascendion (Pensieve, 2K+ daily users).
 
-3. It works inside Claude Code, Cursor, and Windsurf via MCP in one command: `claude mcp add trelix -- trelix-mcp`
+3. MCP integration — one command and trelix works inside Claude Code, Cursor, and Windsurf: `claude mcp add trelix -- trelix-mcp`. The open-source version of what I learned building AAVA Code.
 
-The core design decision I'd make again: zero infrastructure by default. The entire index — vectors, BM25, call graph, symbols — lives in a single SQLite file. Most developers don't want to run a vector database just to search their codebase.
+The design decision I'd make again: zero infrastructure by default. Vectors, BM25, call graph, symbols — all in a single SQLite file. Most developers don't want to run a vector database just to understand their own code.
 
 1,508 tests. 20+ languages. MIT licensed.
 
-Full story in the article (link in comments).
+Full story in the first comment.
 
 github.com/sairam0424/trelix

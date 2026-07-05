@@ -14,6 +14,8 @@ Four hours. Three teammates interrupted. Twelve dead ends across files I didn't 
 
 That day stuck with me. I kept running into the same pattern on different teams, different codebases, different languages. Every time I joined something new or came back to a project after six months away, the first few days were archaeology. Tracing calls manually. Reconstructing context that should have been queryable.
 
+I know this problem from both sides. At Ascendion I co-built AAVA Code — an AI coding plugin for VS Code used by 3K+ developers daily across 5+ client environments. Every new client onboarding meant day one was archaeology: unfamiliar codebase, no fast way to answer "how does X work?" without interrupting someone who knew. The tooling pain was consistent regardless of how good the codebase was.
+
 I built trelix to fix this. It's an open-source code intelligence engine that indexes any repository with Tree-sitter, embeds every symbol, and answers natural-language questions using hybrid BM25 + vector + call-graph search. It works offline. No API key needed. Zero infrastructure.
 
 ```bash
@@ -93,6 +95,8 @@ The default setup (BM25 + vector + grep + call graph) handles most questions wel
 
 Plus query-side enhancements: **HyDE** (generates a hypothetical code answer as the ANN query vector, improving recall on abstract questions), **FLARE** (confidence-gated re-retrieval — when synthesis spans show uncertainty, trelix re-queries before finalizing the answer), and since v2.2.0, an **agentic ReAct loop** that does multi-turn retrieve→observe→re-retrieve with self-correction.
 
+The agentic loop and FLARE aren't academic — I built RAG + ReAct pipelines in production at Ascendion (Pensieve, 2K+ daily users; the Execution Engine, 1.5K+ users). The pattern of retrieve→observe→re-retrieve is what those systems actually needed to produce reliable structured output. trelix's agentic mode comes directly from that experience.
+
 ```bash
 # Enable everything
 TRELIX_RETRIEVAL_AGENTIC=true \
@@ -131,6 +135,8 @@ claude mcp add trelix -- trelix-mcp
 ```
 
 Then inside Claude Code: *"index my repo at /path/to/repo, then find how authentication works"*.
+
+I built AAVA Code as an AI coding plugin for VS Code with 150+ skills and 40+ tools. The MCP integration in trelix is the open-source version of what I learned building that — getting intelligence about a codebase into the IDE context where the developer is actually working, without context-switching.
 
 ## What Surprised Me Building This
 

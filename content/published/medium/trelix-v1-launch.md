@@ -11,7 +11,9 @@ I spent my first day on a new team grepping through 80,000 lines of code trying 
 
 Four hours. Three teammates interrupted. Twelve dead ends. The code was fine — well-written, organized, reasonably documented. The tooling was the problem. I was using grep to understand something that wasn't a text search problem. Code has structure: call edges, import chains, type hierarchies, abstract syntax tree relationships. Grep ignores all of it.
 
-That afternoon I started thinking about what a better tool would look like. It took about two years of evenings to build it properly. I called it trelix.
+That afternoon I started thinking about what a better tool would look like. The feeling only got stronger when I joined Ascendion and co-built AAVA Code — an AI coding plugin for VS Code used by 3K+ developers daily. Every new client environment we onboarded to was the same story: day one was archaeology, regardless of how clean the codebase was. The problem wasn't the code. It was the absence of a tool that understood code as a graph rather than a text file.
+
+It took a couple of years of evenings to build it properly. I called it trelix.
 
 ## Why Grep Is the Wrong Tool for Understanding Code
 
@@ -92,7 +94,7 @@ Inside the IDE, you can say "index my repo at /path/to/repo, then find how authe
 
 ## What I Got Wrong Building This
 
-I expected the hardest part to be the embedding and retrieval pipeline. It wasn't.
+I expected the hardest part to be the embedding and retrieval pipeline. It wasn't. Some of that confidence came from having built RAG + ReAct systems in production before — at Ascendion I co-built Pensieve (a multi-agent orchestration engine at 2K+ daily users) and the Execution Engine (RAG + ReAct for structured artifact generation at 1.5K+ users). The retrieval architecture felt familiar. The graph layer did not.
 
 The hardest part was the call-graph resolver. My first version used name-only matching for cross-file call edges. `login()` in file A calls `login()` in file B. This produced a dense, noisy graph with roughly 40% false-positive edges on real codebases. The fix was a 3-priority resolution strategy: try qualified name first (most precise, lowest recall), then type hint plus name, then name-only as fallback. That cut false positives to around 10% while maintaining recall on Python and TypeScript codebases without full type annotations.
 
