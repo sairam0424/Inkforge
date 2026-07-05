@@ -2,7 +2,10 @@
 slug: trelix-v1-launch
 title: "I Built trelix Because I Was Tired of Grepping My Way Through Codebases"
 platform: devto
-status: draft
+status: live
+published_url: https://dev.to/sai_ram_0000/i-built-trelix-because-i-was-tired-of-grepping-my-way-through-codebases-1f3b
+published_date: 2026-07-05
+devto_id: 4071930
 tags: ["python", "opensource", "ai", "codesearch"]
 cover_image: assets/trelix-v1/cover.png
 canonical_url: https://anvilry.vercel.app/notes/trelix-code-intelligence-engine

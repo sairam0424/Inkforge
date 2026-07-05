@@ -2,7 +2,9 @@
 slug: trelix-v1-launch
 title: "I Built trelix Because I Was Tired of Grepping My Way Through Codebases"
 platform: substack
-status: draft
+status: live
+published_url: https://open.substack.com/pub/sairam0000/p/i-built-trelix-because-i-was-tired?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+published_date: 2026-07-05
 canonical_url: https://anvilry.vercel.app/notes/trelix-code-intelligence-engine
 paste_workflow: "SUBSTACK PASTE: Run python3 /tmp/render-substack-trelix.py — opens browser, Cmd+A, Cmd+C — then paste into Substack editor body"
 ---
