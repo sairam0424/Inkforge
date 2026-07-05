@@ -2,7 +2,7 @@ I spent my first day on a new team grepping through 80,000 lines of code trying 
 
 4 hours. Three teammates interrupted. Twelve dead ends.
 
-I've lived this on both sides. At Ascendion I co-built AAVA Code — an AI coding plugin for VS Code with 3K+ daily users across 5+ client environments. Every new client onboarding, day one was the same: unfamiliar codebase, no fast way to answer "how does X work?" without interrupting someone. The tooling gap was consistent regardless of how good the code was.
+I've lived this on both sides. At Ascendion we built AAVA Code — an AI coding plugin for VS Code with 3K+ daily users across 5+ client environments. Every new client onboarding, day one was the same: unfamiliar codebase, no fast way to answer "how does X work?" without interrupting someone. The tooling gap was consistent regardless of how good the code was.
 
 So I built trelix — an open-source code intelligence engine that indexes any codebase and answers questions about it using hybrid BM25 + vector + call-graph search. It works offline. No API key. Single SQLite file. Zero infra.
 

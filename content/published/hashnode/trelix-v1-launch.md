@@ -12,7 +12,7 @@ I spent my first day on a new team grepping through 80,000 lines of code trying 
 
 Four hours. Three teammates interrupted. Twelve dead ends. The code was fine — well-written, well-organized, reasonably documented. The tooling was the problem. I was using grep to understand something that wasn't a text search problem. Code has structure: call edges, import chains, type hierarchies, AST relationships. Grep ignores all of it.
 
-I know this problem from both sides. At Ascendion I co-built AAVA Code — an AI coding plugin for VS Code used by 3K+ developers daily across 5+ client environments. Every new client onboarding meant day one was archaeology: unfamiliar codebase, no fast way to answer "how does X work?" without interrupting someone who knew. The tooling gap was consistent regardless of how good the code was.
+I know this problem from both sides. At Ascendion we built AAVA Code — an AI coding plugin for VS Code used by 3K+ developers daily across 5+ client environments. Every new client onboarding meant day one was archaeology: unfamiliar codebase, no fast way to answer "how does X work?" without interrupting someone who knew. The tooling gap was consistent regardless of how good the code was.
 
 I built trelix to fix this. It's an open-source Python code intelligence engine that indexes any repository with Tree-sitter, embeds every symbol, and answers natural-language questions using hybrid BM25 + vector + call-graph search. It works offline with no API key. Zero infrastructure.
 
@@ -111,7 +111,7 @@ Since v2.3.0, trelix also exposes MCP Resources — URI-addressable data that MC
 
 In v2.4.0, `search_code` got cursor pagination: it now returns `{results, next_cursor, total_available}` instead of a flat list. This is a breaking change if you're iterating the result directly — update to `response["results"]` and pass `response["next_cursor"]` as `cursor=` for the next page.
 
-The MCP integration design comes directly from building AAVA Code — an AI coding plugin for VS Code with 150+ skills, 40+ tools, and ~60 commands used by 3K+ developers. The lesson from that work: the right level of abstraction for IDE integration is tools that understand the structure of the codebase, not just its text. trelix-mcp is the open-source version of that principle.
+The MCP integration design comes directly from building AAVA Code — an AI coding plugin for VS Code with 150+ skills, 40+ tools, and ~60 commands that we built at Ascendion for 3K+ developers. The lesson from that work: the right level of abstraction for IDE integration is tools that understand the structure of the codebase, not just its text. trelix-mcp is the open-source version of that principle.
 
 ## The Features I Kept Reaching For
 
