@@ -1,0 +1,19 @@
+Across every production system I've worked on, the scariest bugs are not the ones that crash loudly. They are the ones that return 200 OK while silently doing nothing.
+
+After we shipped Tombstone v1.0 — blast radius gates, Merkle-chained audit logs, a kill-switch that could tombstone a feature in one API call — I felt genuinely good about the state of the system. Good enough to write about it, merge to main, and move on. (If you missed that story: https://open.substack.com/pub/sairam0000/p/i-built-tombstone-because-i-was-tired)
+
+What came next was two weeks of pressure testing against production reality, and it was humbling.
+
+The kill switch — the primary on-call path, the one thing you reach for at 2am — was sending the environment as a URL parameter instead of a JSON body. It had been returning HTTP 400 on every request. The four-eyes approval flow was fully implemented, reviewed, code-reviewed again, and merged. It was also completely unreachable because nobody registered the three endpoints in main.go. Both of these passed CI. Both of them would have failed silently in production, on the exact night you needed them most.
+
+That is what v1.2.1 exists to fix, and it is what forced the harder conversation that runs through all of v1.2.0.
+
+Resilience is not a feature you ship. It is a property you discover you are missing. Every inter-service call in Tombstone now goes through failsafe-go with exponential backoff, jitter, and per-client circuit breaking. Every /readyz endpoint actually checks Postgres and Redis with a three-second timeout before telling Kubernetes the pod is ready. Idempotency keys on CreateFlag, UpdateEnvironment, and KillSwitch mean a replayed request under network retry does exactly what you intended — once, with no duplicate audit rows. Redis Streams DLQ means poison messages surface instead of disappearing. The scheduler now uses SELECT FOR UPDATE SKIP LOCKED to prevent a flag change from executing twice under load.
+
+V1.1 brought the governance loop — Slack slash commands with Block Kit UI, health score alerts when things drift, Redis Streams replacing Kafka for flag delivery. V1.2 made everything under that layer actually reliable.
+
+The audit pass that found REG-001 and REG-002 only happened because I was writing this post and went looking for things to be proud of. I found things to fix instead.
+
+What is the most quietly broken thing in your current feature-flag or kill-switch path — and when did you last actually test it end-to-end under a simulated failure?
+
+GitHub: https://github.com/sairam0424/Tombstone
