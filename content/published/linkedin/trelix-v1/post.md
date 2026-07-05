@@ -39,7 +39,7 @@ Full story in the first comment.
 
 What's the longest you've spent trying to understand a piece of code you didn't write?
 
-github.com/sairam0424/trelix
+https://github.com/sairam0424/trelix
 
 ## Upload instructions
 

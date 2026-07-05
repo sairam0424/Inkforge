@@ -4,7 +4,8 @@ title: "I Built a Code Intelligence Engine That Answers Questions About Any Code
 platform: medium
 status: draft
 canonical_url: https://anvilry.vercel.app/notes/trelix-code-intelligence-engine
-tags: ["Python", "OpenSource", "SoftwareEngineering", "Programming", "Technology"]
+tags: ["Python", "Open Source", "Software Engineering", "Programming", "Technology"]
+cover_image: assets/trelix-v1/cover.png
 ---
 
 I spent my first day on a new team grepping through 80,000 lines of code trying to find where authentication worked.
