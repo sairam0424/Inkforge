@@ -22,5 +22,5 @@ One thing 2 years of building AI infrastructure at Ascendion taught me: whether 
 
 Full story: https://open.substack.com/pub/sairam0000/p/i-built-trelix-because-i-was-tired
 
-Star it, use it, or break it — all feedback welcome:
+Open source, MIT licensed. If this is useful to you, the repo is here:
 https://github.com/sairam0424/trelix
