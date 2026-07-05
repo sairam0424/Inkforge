@@ -22,4 +22,5 @@ One thing 2 years of building AI infrastructure at Ascendion taught me: whether 
 
 Full story: https://open.substack.com/pub/sairam0000/p/i-built-trelix-because-i-was-tired
 
+Star it, use it, or break it — all feedback welcome:
 https://github.com/sairam0424/trelix
