@@ -1,0 +1,18 @@
+trelix v2.11.0 is out — Jira and Linear connectors now link tickets straight into your code graph.
+
+What's new since v2.9.0:
+
+-> Jira connector: HTTP Basic auth (email + API token), cursor-based pagination, and a real ADF-to-text renderer for Jira Cloud's nested-JSON description field
+-> Linear connector: GraphQL-only client with Relay-style pagination, query-complexity budgeting, and correct raw-key auth (no Bearer prefix)
+-> ArtifactLinker: synced tickets auto-link to code symbols via regex extraction the moment `sync()` returns — no separate linking pass required
+-> Common-word stoplist protects link precision so tickets titled with words like "test" or "run" don't spuriously match unrelated functions
+-> Xray and TestRail connectors now share the same `ArtifactSource` contract as Jira and Linear — one CLI, one factory, one sync path
+-> Unified retry/backoff contract (tenacity-based) shared across every LLM backend, embedder, and connector, honoring `Retry-After`
+-> Structured JSON logging with trace-ID correlation
+-> Personalized PageRank (opt-in) concentrates ranking mass on ticket-linked symbols
+
+1,909 unit tests. Still one SQLite file, still zero-infra.
+
+MIT licensed. GitHub: https://github.com/sairam0424/trelix
+
+Full writeup: https://open.substack.com/pub/sairam0000/p/trelix-v2110-jira-and-linear-now?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true

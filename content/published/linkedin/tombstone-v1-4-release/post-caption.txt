@@ -1,0 +1,21 @@
+Tombstone v1.4.2 is out — production intelligence for feature flags, now hardened from the running system all the way up through deployment.
+
+What's new since v1.2:
+
+→ Helm chart now deploys all 5 services (evaluator, intelligence, and marketplace were missing Deployment templates — closed as of v1.3.0), plus an optional HPA for evaluator
+
+→ Python SDK reaches full 5-step evaluation parity with the TypeScript SDK — every targeting operator, semver comparison, date operator, and prerequisite-flag evaluation, zero new runtime dependencies
+
+→ Redoc interactive API explorer embedded directly in flag-api at `/api/v1/docs` — no CDN dependency
+
+→ Flux CD v2.3+ GitOps: layered Kustomization with dependsOn + healthChecks guaranteeing CRDs exist before the CRs that need them
+
+→ Argo CD v2.11 added as a second GitOps controller in a split-responsibility design — Flux owns infrastructure, Argo CD owns FeatureFlag/FlagPolicy CRs, with explicit protection for ML-driven rollout percentages
+
+→ Argo Rollouts canary analysis now polls the evaluator's blast-radius endpoint directly — promotes on LOW/MEDIUM, aborts on HIGH/BLOCKED. The same blast-radius scoring from v1.0 now gates live Kubernetes deployments
+
+→ CI hardened: removed `|| true` from test steps so failures actually block merges; all GitHub Actions pinned to immutable commit SHAs
+
+Self-hosted. MIT licensed. `make dev` to start everything locally.
+
+GitHub: https://github.com/sairam0424/Tombstone

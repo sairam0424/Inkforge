@@ -1,0 +1,19 @@
+trelix v2.9.0 is out — code intelligence for your entire codebase, still zero-infra.
+
+What's new since v2.7.0:
+
+-> TypeScript SDK: Dedicated HTTP client with generated types for every route, plus a dedicated async generator for streaming /ask responses
+-> Cursor-based pagination on the search endpoint, matching the MCP tool's existing contract
+-> OpenTelemetry tracing (opt-in): one span per retrieval leg and pipeline stage, with context propagated across thread-pool boundaries
+-> Official multi-arch Docker images (slim + offline -local variant) and a Helm chart for real multi-repo deployments
+-> Multi-repo federation exposed to MCP clients via 4 new tools, plus persistent agent memory that resumes prior conversations
+-> Python 3.13 support via a full tree-sitter grammar migration across the C#, Kotlin, Python, Go, and TypeScript extractors
+-> VS Code: debounced (250ms) search-as-you-type with live snippet preview and real syntax highlighting
+-> Fixed an XSS vulnerability in the VS Code ask-panel webview (CSP + escaping) plus 5 concurrency races and a silent graph-corruption bug, caught via stress testing
+-> GitHub App reached GA-readiness: expiry-aware installation-token caching, constant-time webhook signature verification
+
+1,643 unit tests. Still one SQLite file, no vector DB required, zero-infra. `pip install "trelix[local]"` for fully offline use.
+
+MIT licensed. GitHub: https://github.com/sairam0424/trelix
+
+Full writeup: https://open.substack.com/pub/sairam0000/p/trelix-v27-to-v29-the-release-where?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
