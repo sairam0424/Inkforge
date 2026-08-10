@@ -26,6 +26,15 @@ LENGTH   ?= medium
 CATEGORY ?= general
 TAGS     ?=
 
+# Additional generate passthrough variables (all optional)
+TITLE     ?=
+PLATFORMS ?=
+MODE      ?= oneshot
+DATE      ?=
+CODE      ?=
+SLUG      ?=
+PLATFORM  ?=
+
 # Required env vars checked by env-check
 REQUIRED_VARS := LLM_PROVIDER BEDROCK_ACCESS_KEY_ID BEDROCK_SECRET_ACCESS_KEY \
                  BEDROCK_REGION INKFORGE_CONTENT_DIR INKFORGE_CANONICAL_BASE \
@@ -72,8 +81,9 @@ help: ## Show this help message
 	  /^##@/ { printf "\n$(BOLD)%s$(RESET)\n", substr($$0,5) } \
 	  /^[a-zA-Z_-]+:.*?##/ { printf "  $(CYAN)%-26s$(RESET) %s\n", $$1, $$2 }' \
 	  $(MAKEFILE_LIST)
-	@printf "\n$(YELLOW)Defaults:$(RESET) TONE=$(TONE)  FORMAT=$(FORMAT)  LENGTH=$(LENGTH)  CATEGORY=$(CATEGORY)\n"
-	@printf "$(YELLOW)Override:$(RESET) make generate TOPIC=\"...\" TONE=senior FORMAT=tutorial LENGTH=comprehensive\n\n"
+	@printf "\n$(YELLOW)Defaults:$(RESET) TONE=$(TONE)  FORMAT=$(FORMAT)  LENGTH=$(LENGTH)  CATEGORY=$(CATEGORY)  MODE=$(MODE)\n"
+	@printf "$(YELLOW)Generate:$(RESET) make generate TOPIC=\"...\" [TONE=senior FORMAT=tutorial LENGTH=comprehensive TITLE=\"...\" PLATFORMS=devto,hashnode]\n"
+	@printf "$(YELLOW)Publish: $(RESET) make publish-devto SLUG=my-article  |  make publish-hashnode SLUG=my-article\n\n"
 
 # =============================================================================
 # 2. SETUP
@@ -82,10 +92,15 @@ help: ## Show this help message
 ##@ Setup
 
 .PHONY: install
-install: _check-pnpm ## Install all workspace dependencies
+install: _check-pnpm ## Install all workspace dependencies (includes git hooks via husky)
 	@printf "$(CYAN)→ Installing dependencies...$(RESET)\n"
 	$(PNPM) install
 	@printf "$(GREEN)✓ Dependencies installed$(RESET)\n"
+
+.PHONY: setup-hooks
+setup-hooks: _check-pnpm ## Re-install git pre-commit hooks (husky + lint-staged)
+	$(PNPM) exec husky
+	@printf "$(GREEN)✓ Git hooks installed — pre-commit runs typecheck on staged .ts/.tsx$(RESET)\n"
 
 .PHONY: env-setup
 env-setup: ## Copy .env.example → .env (skips if .env already exists)
@@ -156,6 +171,10 @@ dev: _check-pnpm ## Start all dev watchers (turbo dev — all packages, persiste
 dev-web: _check-pnpm ## Start Next.js dev server on localhost:3000
 	$(PNPM) --filter @inkforge/web dev
 
+.PHONY: start
+start: _check-pnpm ## Start production web server — run make build-web first
+	$(PNPM) --filter @inkforge/web start
+
 # =============================================================================
 # 4. QUALITY
 # =============================================================================
@@ -163,7 +182,7 @@ dev-web: _check-pnpm ## Start Next.js dev server on localhost:3000
 ##@ Quality
 
 .PHONY: test
-test: _check-pnpm ## Run all tests (vitest)
+test: _check-pnpm ## Run core unit tests (vitest — @inkforge/core)
 	$(PNPM) --filter @inkforge/core test
 
 .PHONY: test-watch
@@ -200,15 +219,27 @@ ci: install build test typecheck security-scan ## Full local CI simulation (mirr
 ##@ Generate
 
 .PHONY: generate
-generate: _check-cli ## Generate from topic  [TOPIC=required, TONE FORMAT LENGTH CATEGORY TAGS optional]
-	$(call require-var,TOPIC)
+generate: _check-cli ## Generate article  [TOPIC= or INPUT= or CODE=, + TONE FORMAT LENGTH CATEGORY TAGS TITLE PLATFORMS MODE DATE optional]
+	@test -n "$(TOPIC)" || test -n "$(INPUT)" || test -n "$(CODE)" || { \
+	  printf "$(RED)✗ One of TOPIC, INPUT, or CODE is required.$(RESET)\n"; \
+	  printf "  Examples:\n"; \
+	  printf "    make generate TOPIC=\"...\"\n"; \
+	  printf "    make generate INPUT=content/inputs/react/hooks.md\n"; \
+	  printf "    make generate CODE=src/utils/parser.ts\n"; \
+	  exit 1; }
 	$(CLI_BIN) generate \
-	  --topic "$(TOPIC)" \
+	  $(if $(TOPIC),--topic "$(TOPIC)") \
+	  $(if $(INPUT),--input "$(INPUT)") \
+	  $(if $(CODE),--code "$(CODE)") \
 	  --tone $(TONE) \
 	  --format $(FORMAT) \
 	  --length $(LENGTH) \
 	  --category $(CATEGORY) \
-	  $(if $(TAGS),--tags "$(TAGS)")
+	  $(if $(TAGS),--tags "$(TAGS)") \
+	  $(if $(TITLE),--title "$(TITLE)") \
+	  $(if $(PLATFORMS),--platforms "$(PLATFORMS)") \
+	  $(if $(MODE),--mode $(MODE)) \
+	  $(if $(DATE),--date $(DATE))
 
 .PHONY: generate-from-notes
 generate-from-notes: _check-cli ## Generate from a notes file  [INPUT=path, TONE FORMAT LENGTH CATEGORY optional]
@@ -258,6 +289,32 @@ publish-devto-live: _check-cli ## Publish to Dev.to as public post  [SLUG=requir
 	  --slug $(SLUG) \
 	  --platform devto \
 	  --published \
+	  $(if $(CATEGORY),--category $(CATEGORY))
+
+.PHONY: publish-hashnode
+publish-hashnode: _check-cli ## Publish to Hashnode as draft  [SLUG=required, CATEGORY optional]
+	$(call require-var,SLUG)
+	$(CLI_BIN) publish \
+	  --slug $(SLUG) \
+	  --platform hashnode \
+	  $(if $(CATEGORY),--category $(CATEGORY))
+
+.PHONY: publish-hashnode-live
+publish-hashnode-live: _check-cli ## Publish to Hashnode as public post  [SLUG=required, CATEGORY optional]
+	$(call require-var,SLUG)
+	$(CLI_BIN) publish \
+	  --slug $(SLUG) \
+	  --platform hashnode \
+	  --published \
+	  $(if $(CATEGORY),--category $(CATEGORY))
+
+.PHONY: publish
+publish: _check-cli ## Publish to any platform as draft  [SLUG=required, PLATFORM=devto|hashnode, CATEGORY optional]
+	$(call require-var,SLUG)
+	$(call require-var,PLATFORM)
+	$(CLI_BIN) publish \
+	  --slug $(SLUG) \
+	  --platform $(PLATFORM) \
 	  $(if $(CATEGORY),--category $(CATEGORY))
 
 .PHONY: publish-status
