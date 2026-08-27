@@ -45,6 +45,10 @@ jobs:
       - name: TypeScript — web
         run: cd apps/web && npx tsc --noEmit
 
+      - name: Lint
+        run: pnpm lint
+        continue-on-error: true  # ESLint rules not yet configured; activates automatically once rules are added
+
   security:
     name: Security Audit
     runs-on: ubuntu-latest
