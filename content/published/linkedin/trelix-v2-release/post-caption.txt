@@ -1,0 +1,21 @@
+trelix v2.7.0 is out — code intelligence for your entire codebase, still zero-infra.
+
+What's new since v1.0:
+
+→ Knowledge Graph: call/import/type edges unified into one traversable graph, Louvain community detection, PageRank symbol boosting, incremental updates on file watch (`trelix call-graph` / `trelix graph`)
+
+→ 7 fused retrieval legs via Reciprocal Rank Fusion: BM25, vector, call graph, RAPTOR-style file summaries, HyDE fallback, multi-query expansion, FLARE confidence-gated re-retrieval
+
+→ Agentic ReAct loop + data-flow/taint analysis + SPLADE-Code sparse retrieval + multi-granularity indexing
+
+→ Federated multi-repo search with SCIP-style cross-repo symbol resolution and TTL-cached results
+
+→ `trelix review --pr owner/repo#N --post-comments` — retrieval-augmented GitHub PR review, plus a GitHub Actions workflow that posts inline check annotations automatically
+
+→ DimensionGuard — fails fast on embedding provider/dimension mismatch instead of silently returning wrong results
+
+→ VS Code extension scaffold + MCP resource subscriptions for live file-change push notifications
+
+1,508 tests (1,467 unit + 41 MCP). Still one SQLite file, no vector DB required. `pip install "trelix[local]"` for fully offline use.
+
+MIT licensed. GitHub: https://github.com/sairam0424/trelix

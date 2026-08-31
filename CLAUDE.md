@@ -1,102 +1,168 @@
-# Inkforge — Claude Code Configuration
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What This Is
-AI-powered article generation system. Takes notes/topic/code → produces human-readable MDX articles.
-Standalone project; outputs MDX to own `content/articles/` AND mirrors to `../Anvilry/sairam-dev/content/notes/`.
+
+AI-powered article generation system. Takes notes/topic/code → produces `.md` articles via a STORM two-stage pipeline. Outputs to `content/articles/` and optionally mirrors to `../Anvilry/sairam-dev/content/notes/`.
 
 ## Commands
+
 ```bash
-pnpm install              # Install all packages
-pnpm build                # Build all packages (turbo)
-pnpm test                 # Run all tests
-pnpm --filter @inkforge/core build   # Build core only
-pnpm --filter @inkforge/core test    # Test core only
+pnpm install                              # install all packages
+pnpm build                                # build all packages via turbo (core → cli → web)
+pnpm test                                 # run all tests
+pnpm typecheck                            # typecheck all packages
+pnpm clean                                # remove all dist/ and .next/
+
+pnpm --filter @inkforge/core build        # build core only
+pnpm --filter @inkforge/core test         # run vitest tests (11 passing)
+pnpm --filter @inkforge/core test:watch   # watch mode
+pnpm --filter @inkforge/core typecheck    # typecheck core only
+pnpm --filter @inkforge/cli typecheck     # typecheck CLI
+pnpm --filter @inkforge/web dev           # Next.js dev server → http://localhost:3000
 
 # CLI (after build)
-node packages/cli/dist/index.js generate --topic "..." --tone senior --format explainer --length medium
+node packages/cli/dist/index.js generate \
+  --topic "How DNS resolution works" \
+  --tone senior --format explainer --length comprehensive --category system-design
 node packages/cli/dist/index.js list
 node packages/cli/dist/index.js publish --slug my-article --platform devto hashnode
 ```
 
-## Project Structure
+Turbo build graph: `core` must build before `cli` and `web` (both depend on `@inkforge/core: workspace:*`).
+
+## Architecture
+
+pnpm + Turborepo monorepo. Three packages with strict dependency direction:
+
 ```
-packages/
-  core/         @inkforge/core — all generation logic (no UI dependency)
-    src/
-      llm/      streamWithFallback (adapted from Anvilry)
-      pipeline/ ingest → outline → draft → polish → emit
-      rag/      BM25 in-memory chunker + indexer + enricher
-      publishers/ devto, hashnode, substack stub
-      schema/   Zod types for all pipeline interfaces
-      modes/    tone/format/length constants + word budgets
-  cli/          @inkforge/cli — Commander.js shell over core
-    src/
-      commands/ generate, publish, list
-content/
-  articles/     primary MDX output sink
+packages/core  (@inkforge/core)   — STORM pipeline, BM25 RAG, publishers, all Zod schema
+packages/cli   (@inkforge/cli)    — Commander.js shell; depends on core
+apps/web       (@inkforge/web)    — Next.js 16 + Tailwind v4; depends on core
 ```
 
-## LLM Layer
-Bedrock (default): Sonnet 4.6 → Opus 4.6 → Haiku 4.5 fallback chain.
-Toggle via `LLM_PROVIDER=anthropic` for direct Anthropic API.
-Pattern adapted from `Anvilry/sairam-dev/src/lib/llm.ts` — do NOT import from there, the copy in `packages/core/src/llm/index.ts` is the source of truth for Inkforge.
+### STORM Pipeline (`packages/core/src/pipeline/`)
 
-## Pipeline (STORM two-stage)
-1. `ingest` — normalise input (notes/topic/code) → NormalisedInput
-2. `outline` — LLM call → explicit Outline artifact (h2/h3 tree + word budgets)
-3. `draft` — one LLM call per section, context-chained, sequential
-4. `polish` — single humanisation pass (voice, concreteness, transitions)
-5. `emit` — MDX frontmatter + dual file write
+The pipeline is orchestrated by `generate.ts`, which calls stages in order and fires `onProgress` callbacks for the CLI spinner and the web SSE stream.
+
+```
+ingest.ts   → NormalisedInput      (sync; extracts headings/code/tags)
+outline.ts  → Outline              (LLM call; validated against OutlineSchema)
+draft.ts    → section strings[]    (one LLM call per section, context-chained)
+polish.ts   → polished body        (single humanisation LLM call)
+emit.ts     → EmitResult           (writes .md to content/articles/, optionally mirrors to Anvilry)
+```
+
+**Stage isolation**: each stage takes the output of the previous as input — no shared mutable state between stages.
+
+**Context chaining in draft**: each section call receives the full outline + summaries of all previously drafted sections. The growing full draft is NOT sent — this caps token usage while preventing repetition.
+
+### LLM Abstraction (`packages/core/src/llm/index.ts`)
+
+Single source of truth for all LLM interactions. Key exports:
+
+| Export | Use |
+|---|---|
+| `generateText()` | Blocking accumulation — for pipeline intermediate stages |
+| `streamText()` | Returns `ReadableStream<Uint8Array>` — for web SSE |
+| `isConfigured()` | Boolean env check, no network call |
+| `isFallbackEligible(err)` | 429 / 404 / 5xx / connection errors → true; 403 bad-credentials → false |
+
+**Fallback chain (Bedrock):** `us.anthropic.claude-sonnet-4-6` → `us.anthropic.claude-haiku-4-5-20251001-v1:0`
+**Fallback chain (Anthropic):** `claude-sonnet-4-6` → `claude-opus-4-7` → `claude-haiku-4-5`
+
+Opus 4.6 is excluded from the Bedrock chain — it requires explicit per-account model enablement. Re-add `us.anthropic.claude-opus-4-6-v1` once enabled in the AWS console.
+
+The 403 fallback distinction is intentional: IAM per-model deny (`is not authorized to invoke`) is fallback-eligible; 403 bad-credentials is not (retrying other models won't fix it).
+
+AWS credentials can be stored as either raw strings or base64-encoded. `decodeSecret()` in `llm/index.ts` handles both transparently.
+
+### Path Resolution Invariant
+
+`emit.ts` resolves all output paths against `process.cwd()` at module load time. This means `INKFORGE_CONTENT_DIR=content/articles` always resolves relative to wherever the CLI or Next.js server was invoked — not relative to the compiled file. Run the CLI and the web server from the Inkforge project root.
+
+### Web Streaming Architecture
+
+The `/api/generate` route returns SSE (`text/event-stream`). Each pipeline stage fires a `progress` event; final completion fires `complete`. Event shape:
+
+```
+data: {"type": "progress", "stage": "draft", "detail": "2/5 — Introduction"}
+data: {"type": "complete", "slug": "...", "wordCount": 1842, ...}
+data: {"type": "error", "message": "..."}
+```
+
+The `maxDuration = 120` export on the route guard is required for Vercel — the polish stage sends a full assembled draft and can take >30s.
+
+### Schema (`packages/core/src/schema/index.ts`)
+
+All Zod schemas and inferred TypeScript types live here. The canonical type hierarchy:
+
+```
+GenerationRequest  →  (ingest)  →  NormalisedInput
+NormalisedInput    →  (outline) →  Outline (OutlineSection[])
+Outline            →  (draft)   →  section strings
+section strings    →  (emit)    →  ArticleOutput  →  EmitResult
+```
+
+### RAG Layer (`packages/core/src/rag/`)
+
+Used when input type is `notes`. BM25 in-memory index (k1=1.5, b=0.75) over the local `content/` directory. No external DB required.
+
+- `chunker.ts` — hierarchical markdown chunker: h1-h6 hard splits, ~2000 char soft splits, heading context string preserved per chunk
+- `indexer.ts` (`NoteIndex`) — BM25 search, returns top-5 chunks
+- `enricher.ts` — injects top-5 hits into the outline stage prompt
+
+### Publishers (`packages/core/src/publishers/`)
+
+Each publisher is a subpath export (`./publishers/devto`, `./publishers/hashnode`). `substack.ts` is a stub (no API yet). Publishers read auth from env vars and set `canonical_url` / `originalArticleURL` automatically.
+
+Adding a new publisher requires: the publisher file, a `package.json` subpath export, wiring into `packages/cli/src/commands/publish.ts`, a `.env.example` entry, and a CLAUDE.md publishing rules section.
 
 ## Schema / Types
-All types live in `packages/core/src/schema/index.ts` (Zod-validated).
-Key types: GenerationRequest, GenerationParams, Outline, ArticleOutput, EmitResult.
 
-## Anvilry Integration
-- `velite.config.ts` extended with optional Inkforge fields (tone/format/length/wordCount/readingTime/generatedBy/platforms)
-- `src/lib/content.ts` exports `inkforgeNotes` filter
-- Anvilry mirror path set via `INKFORGE_ANVILRY_NOTES_DIR` env var
+All types are in `packages/core/src/schema/index.ts` (Zod-validated). Never add ad-hoc type definitions elsewhere. Add new tone/format/length constants to `packages/core/src/modes/index.ts` — this file also holds `WORD_BUDGETS`, `TONE_INSTRUCTIONS`, `FORMAT_INSTRUCTIONS`, and `SECTION_COUNTS`.
+
+Adding a new format requires changes in four places: `schema/index.ts`, `modes/index.ts`, `cli/src/commands/generate.ts`, and `apps/web/src/components/generator/GeneratorForm.tsx`.
 
 ## Rules
-- Never import from Anvilry — copy patterns, keep Inkforge self-contained
-- All new pipeline stages must have a unit test with mock LLM responses
-- Files under 500 lines; split large pipeline stages into focused modules
-- `content/articles/` is gitignored (generated output, not source)
 
-## Content Folder Structure
+- Never import from Anvilry — copy patterns, keep Inkforge self-contained
+- All new pipeline stages must have unit tests with mock LLM responses
+- Tests live in `src/**/__tests__/` (vitest glob: `src/**/__tests__/**/*.test.ts`)
+- `content/articles/` and `content/inputs/` are gitignored — generated output, not source
+- `content/published/` is committed — it is the source of truth for what is live where
+- Output format is `.md` (not `.mdx`) for the primary sink — plain markdown is cross-platform; Anvilry mirror also uses `.md` since Velite accepts both via `notes/**/*.{md,mdx}`
+
+## Branching
+
+```
+main      ← production releases only (protected)
+develop   ← integration branch — all features merge here
+feature/* ← branch from develop, PR back to develop
+```
+
+Never branch from or merge directly to `main`. Always branch from `develop`.
+
+## Content Structure
+
 ```
 content/
-  articles/
-    <category>/          # system-design | typescript | react | ai-engineering | career | general
-      <slug>/
-        index.md         # article body (plain .md NOT .mdx — Medium/Substack compatible)
-        assets/
-          cover-medium.png       # 1400×787px cover image for Medium
-          diagram-*.png          # technical diagrams (rendered from SVG via Playwright)
-          diagram-*.svg          # source SVGs (kept for re-rendering)
-          gifs.md                # GIF recommendations per section
-  inputs/
-    <category>/
-      <slug>.md           # raw input notes (always saved alongside output)
-  drafts/
-    .gitkeep
-  published/              # track published versions per platform
-    README.md             # explains the structure and templates
-    medium/               # one <slug>.md per published article
-    substack/             # one <slug>.md per published article
-    hashnode/             # one <slug>.md per published article
-    devto/                # one <slug>.md per published article
-    linkedin/
-      <slug>/             # one folder per article/post
-        post.md           # caption text + notes
-        assets/           # PDF carousel (upload this to LinkedIn)
-        slides/           # individual PNG slides (01–10)
+  articles/<category>/<slug>.md   ← GITIGNORED (generated output)
+  inputs/<category>/<slug>.md     ← GITIGNORED (raw input saved alongside output)
+  drafts/                         ← GITIGNORED
+  published/
+    <platform>/<slug>.md          ← COMMITTED (publish tracking records)
+    linkedin/<slug>/              ← post.md + assets/ (carousel PDF) + slides/ (01-10 PNGs)
 ```
 
-## Published Tracking
+Categories: `system-design` | `typescript` | `react` | `ai-engineering` | `career` | `general`
 
-When an article is published to any platform, create a record at:
-`content/published/<platform>/<slug>.md`
+## Frontmatter Fields
+
+Required on all generated articles: `slug`, `title`, `date`, `summary`, `tags`, `draft`, `tone`, `format`, `length`, `category`, `wordCount`, `readingTime`, `generatedBy: inkforge`, `platforms`.
+
+## Published Tracking Record Format
 
 ```markdown
 ---
@@ -109,62 +175,52 @@ status: live   # live | draft | scheduled
 views: 0
 claps: 0
 ---
-Notes about edits made before publishing, platform-specific changes, etc.
+Notes about edits made before publishing.
 ```
 
-## Article File Format Rules
-- Output is `.md` (not `.mdx`) for primary sink — plain markdown works on all platforms
-- Anvilry mirror keeps `.mdx` since Velite requires it
-- Frontmatter fields: slug, title, date, summary, tags, draft, tone, format, length, category, wordCount, readingTime, generatedBy, platforms
-- `generatedBy: inkforge` on all generated articles
-- Images referenced as `assets/filename.png` (relative to article folder)
-- GIF slots use `GIF_PLACEHOLDER_NAME` until replaced with real URLs
+## Cross-Posting Order (SEO Safe)
 
-## Medium Publishing Rules (verified 2026-06-19)
-- Medium supports ONLY H1 (Header) and H2 (Subheader) — NO H3
-  → Use `##` for section headings, bold `**text**` for sub-points (never `###`)
-- No tables — Medium editor does not support tables
-- No syntax highlighting — code blocks render plain; use GitHub Gist embeds for highlighted code
-- Cover image: 1400×787px PNG (use Playwright renderer, NOT qlmanage — qlmanage adds whitespace)
-- GIF embeds: paste Giphy URL on its own blank line in Medium editor — auto-embeds
-- Import from URL: medium.com/p/import → paste Anvilry URL → preserves all formatting
-- Canonical URL: always set to https://anvilry.vercel.app/notes/<slug> in Story Settings → SEO
-- Tags (topics): max 5 — use: System Design, Programming, Software Engineering, Computer Science, Technology
-- AI-generated content is DISQUALIFIED from Medium Boost and General Distribution
-  → Articles must be human-authored to get meaningful reach beyond followers
-- Opening heading: do NOT start with an H2 — Medium title is set in Story Preview, the first ## is redundant
+1. Publish to Anvilry/sairam.dev first (sets the canonical source)
+2. Wait for Vercel deploy (~2 min)
+3. Medium: import via `medium.com/p/import` → paste live URL → canonical set automatically
+4. Dev.to: publish with `canonical_url` pointing to Anvilry URL
+5. Hashnode: publish with `originalArticleURL` pointing to Anvilry URL
 
-## Dev.to Publishing Rules
-- Canonical URL field: `canonical_url` in frontmatter or API body — already wired in publishers/devto.ts
-- Max 4 tags — first 4 from the article tags array
-- Body sent as `body_markdown` — renders native markdown including code blocks
+## Platform Publishing Rules
 
-## Hashnode Publishing Rules
-- `originalArticleURL` field sets canonical — already wired in publishers/hashnode.ts
-- Max 5 tags
-- Content sent as `contentMarkdown`
+**Medium (verified 2026-06-19):**
+- Only `##` and `**bold**` — NO `###`, NO tables
+- Cover image: 1400×787px PNG — use Playwright (never `qlmanage` — adds whitespace)
+- GIF embeds: paste Giphy URL on its own blank line in the editor
+- Canonical URL: set in Story Settings → SEO
+- Max 5 tags: System Design, Programming, Software Engineering, Computer Science, Technology
+- AI-generated content is disqualified from Boost and General Distribution
+- Opening: do NOT start with an `##` before first paragraph (Medium title is set separately)
+
+**Dev.to:** `canonical_url` field in frontmatter; max 4 tags; body sent as `body_markdown`
+
+**Hashnode:** `originalArticleURL` field; max 5 tags; body sent as `contentMarkdown`
 
 ## SVG → PNG Conversion
-- ALWAYS use Playwright headless Chromium (NOT qlmanage or sips)
-- qlmanage renders to square canvas and adds whitespace — broken output
-- Playwright renders at exact SVG viewBox dimensions — pixel-perfect
-- Script pattern: wrap SVG in HTML page, set body to exact dimensions, screenshot with clip
-- See: assets/diagram-*.svg for source files
 
-## Cross-Posting Order (SEO safe)
-1. Publish to Anvilry/sairam.dev FIRST (sets the canonical source)
-2. Wait for Anvilry to deploy (Vercel, ~2 min)
-3. Import to Medium via medium.com/p/import using the live URL → canonical set automatically
-4. Publish to Dev.to with canonical_url pointing to Anvilry URL
-5. Publish to Hashnode with originalArticleURL pointing to Anvilry URL
+Always use Playwright headless Chromium — never `qlmanage` or `sips`:
 
-## Article Checklist Before Publishing to Medium
-- [ ] No `###` headings in body — only `##` and bold
+```python
+async with async_playwright() as p:
+    browser = await p.chromium.launch()
+    page = await browser.new_page(viewport={"width": W, "height": H})
+    await page.set_content(f"<html><body style='margin:0'>{svg}</body></html>")
+    await page.screenshot(path=out, clip={"x":0,"y":0,"width":W,"height":H})
+```
+
+## Medium Pre-Publish Checklist
+
+- [ ] No `###` headings — only `##` and bold
 - [ ] No tables
-- [ ] Opening section: no redundant H2 before first paragraph
+- [ ] No redundant `##` before the first paragraph
 - [ ] GIF placeholders replaced with real Giphy URLs
-- [ ] Code blocks: create GitHub Gist for any bash/code that needs syntax highlighting
-- [ ] Cover image: 1400×787 PNG exists in assets/
+- [ ] GitHub Gist created for any code needing syntax highlighting
+- [ ] Cover image: 1400×787 PNG in `assets/`
 - [ ] Canonical URL set in Medium Story Settings
-- [ ] 5 Medium-compatible tags set (System Design, Programming, etc.)
+- [ ] 5 Medium-compatible tags set
 - [ ] Article is human-authored/reviewed — not raw AI output
