@@ -20,9 +20,9 @@ Always publish in this order to establish canonical authority:
 ```
 1. Anvilry (sairam.dev)     ← sets the canonical source
        ↓ wait for deploy (~2 min)
-2. Medium                   ← import from URL → canonical auto-set
+2. Medium                   ← browser-harness automation via medium.com/p/import → canonical auto-set
 3. Dev.to                   ← canonical_url field in API call (automated)
-4. Hashnode                 ← manual paste (API decommissioned 2026-06)
+4. Hashnode                 ← browser-harness automation against your own logged-in Chrome (API decommissioned 2026-06)
 5. Substack / LinkedIn      ← copy-paste with attribution
 ```
 
