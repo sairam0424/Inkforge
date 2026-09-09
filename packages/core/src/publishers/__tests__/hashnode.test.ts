@@ -81,4 +81,41 @@ describe("publishToHashnode", () => {
       publishToHashnode(makeArticle(), { editorUrl: "https://sairam.hashnode.dev/new" }),
     ).rejects.toThrow(/body editor not found/);
   });
+
+  it("writes a 'live' tracking record and passes PUBLISH_AFTER_DRAFT=True when opts.published is true", async () => {
+    ensureLoggedInMock.mockResolvedValue(undefined);
+    runBrowserHarnessScriptMock.mockResolvedValue({ status: "ok", url: "https://sairam.hashnode.dev/how-dns-works" });
+
+    const result = await publishToHashnode(makeArticle(), {
+      editorUrl: "https://sairam.hashnode.dev/new",
+      canonicalBase: "https://anvilry.vercel.app/notes",
+      published: true,
+    });
+
+    expect(result).toEqual({ id: "how-dns-works", url: "https://sairam.hashnode.dev/how-dns-works" });
+    const [script] = runBrowserHarnessScriptMock.mock.calls[0];
+    expect(script).toMatch(/PUBLISH_AFTER_DRAFT = True/);
+    const [platform, record] = writePublishedTrackingRecordMock.mock.calls[0];
+    expect(platform).toBe("hashnode");
+    expect(record.status).toBe("live");
+  });
+
+  it("throws and does NOT write a 'live' tracking record when the Publish click could not be confirmed", async () => {
+    ensureLoggedInMock.mockResolvedValue(undefined);
+    // Simulates the browser-harness script's behavior when PUBLISH_AFTER_DRAFT
+    // is true but the Publish/confirm button was never found — the script must
+    // surface this as a status:"error", not a silent status:"ok".
+    runBrowserHarnessScriptMock.mockResolvedValue({
+      status: "error",
+      message: "Hashnode Publish button not found - article was saved as a draft but NOT published",
+    });
+
+    await expect(
+      publishToHashnode(makeArticle(), {
+        editorUrl: "https://sairam.hashnode.dev/new",
+        published: true,
+      }),
+    ).rejects.toThrow(/saved as a draft but NOT published/);
+    expect(writePublishedTrackingRecordMock).not.toHaveBeenCalled();
+  });
 });
