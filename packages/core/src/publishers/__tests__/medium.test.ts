@@ -81,5 +81,25 @@ describe("publishToMedium", () => {
     await expect(
       publishToMedium(makeArticle(), { canonicalBase: "https://anvilry.vercel.app/notes" }),
     ).rejects.toThrow(/Import button not found/);
+    expect(writePublishedTrackingRecordMock).not.toHaveBeenCalled();
+  });
+
+  it("throws and does NOT write a 'live' tracking record when the Publish click could not be confirmed", async () => {
+    ensureLoggedInMock.mockResolvedValue(undefined);
+    // Simulates the browser-harness script's behavior when PUBLISH_AFTER_IMPORT
+    // is true but the Publish/"Publish now" button was never found — the script
+    // must surface this as a status:"error", not a silent status:"ok".
+    runBrowserHarnessScriptMock.mockResolvedValue({
+      status: "error",
+      message: "Medium Publish button not found after import - article was imported as a draft but NOT published",
+    });
+
+    await expect(
+      publishToMedium(makeArticle(), {
+        canonicalBase: "https://anvilry.vercel.app/notes",
+        published: true,
+      }),
+    ).rejects.toThrow(/imported as a draft but NOT published/);
+    expect(writePublishedTrackingRecordMock).not.toHaveBeenCalled();
   });
 });

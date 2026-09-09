@@ -44,6 +44,7 @@ try:
             click_at_xy(x, y)
             wait_for_load()
             wait(2)
+            publish_ok = True
             if PUBLISH_AFTER_IMPORT:
                 publish_clicked = js('''
                     (() => {
@@ -55,7 +56,10 @@ try:
                       return true;
                     })()
                 ''')
-                if publish_clicked:
+                if not publish_clicked:
+                    publish_ok = False
+                    result = {"status": "error", "message": "Medium Publish button not found after import - article was imported as a draft but NOT published"}
+                else:
                     x, y = js('window.__bh_click_target')
                     click_at_xy(x, y)
                     wait(1)
@@ -69,12 +73,16 @@ try:
                           return true;
                         })()
                     ''')
-                    if confirm_clicked:
+                    if not confirm_clicked:
+                        publish_ok = False
+                        result = {"status": "error", "message": "Medium 'Publish now' confirm button not found after clicking Publish - article was imported as a draft but NOT published"}
+                    else:
                         x, y = js('window.__bh_click_target')
                         click_at_xy(x, y)
                         wait_for_load()
-            info = page_info()
-            result = {"status": "ok", "url": info["url"]}
+            if publish_ok:
+                info = page_info()
+                result = {"status": "ok", "url": info["url"]}
 except Exception as e:
     result = {"status": "error", "message": str(e)}
 print(json.dumps(result))
