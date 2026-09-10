@@ -63,6 +63,7 @@ export default function ArticleDetailPage() {
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState<string | null>(null);
   const [publishResults, setPublishResults] = useState<Record<string, string>>({});
+  const [publishError, setPublishError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -77,6 +78,7 @@ export default function ArticleDetailPage() {
 
   const publishTo = async (platform: string) => {
     setPublishing(platform);
+    setPublishError(null);
     try {
       const r = await fetch("/api/publish", {
         method: "POST",
@@ -85,6 +87,7 @@ export default function ArticleDetailPage() {
       });
       const d = await r.json() as { url?: string; error?: string };
       if (d.url) setPublishResults((p) => ({ ...p, [platform]: d.url! }));
+      else if (d.error) setPublishError(d.error);
     } finally {
       setPublishing(null);
     }
@@ -198,6 +201,12 @@ export default function ArticleDetailPage() {
                 <ExternalLink size={13} />
                 {publishing === "hashnode" ? "Publishing…" : publishResults.hashnode ? "Published ✓" : "Publish to Hashnode"}
               </button>
+            )}
+            {publishError && (
+              <div className="rounded-lg border border-red/30 bg-red/10 p-3">
+                <p className="text-xs font-mono text-red mb-1">Publish failed</p>
+                <p className="text-xs text-fg-muted leading-relaxed">{publishError}</p>
+              </div>
             )}
           </div>
         </aside>

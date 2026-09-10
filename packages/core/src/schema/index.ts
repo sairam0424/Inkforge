@@ -5,7 +5,7 @@ export const FormatSchema = z.enum(["tutorial", "narrative", "explainer", "opini
 export const LengthSchema = z.enum(["thread", "short", "medium", "comprehensive"]);
 export const ModeSchema = z.enum(["oneshot", "interactive", "iterative"]);
 export const InputTypeSchema = z.enum(["notes", "topic", "code"]);
-export const PlatformSchema = z.enum(["devto", "hashnode"]);
+export const PlatformSchema = z.enum(["devto", "hashnode", "medium"]);
 
 export const GenerationParamsSchema = z.object({
   tone: ToneSchema.default("intermediate"),

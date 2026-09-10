@@ -1,5 +1,4 @@
 import { publishToDevto } from "@inkforge/core/publishers/devto";
-import { publishToHashnode } from "@inkforge/core/publishers/hashnode";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { contentDir, canonicalBase } from "@/lib/env";
@@ -22,8 +21,22 @@ function parseArticle(mdx: string): Record<string, unknown> {
   return result;
 }
 
+const LOCAL_ONLY_PLATFORMS = new Set(["medium", "hashnode"]);
+
 export async function POST(req: Request) {
   const { slug, platform, published = false } = await req.json() as { slug: string; platform: string; published?: boolean };
+
+  if (LOCAL_ONLY_PLATFORMS.has(platform)) {
+    return Response.json(
+      {
+        error:
+          `${platform} publishing drives your own logged-in Chrome via browser-harness and only runs from the ` +
+          `Inkforge CLI on your machine — run: inkforge publish --slug ${slug} --platform ${platform}`,
+      },
+      { status: 400 },
+    );
+  }
+
   const path = resolve(contentDir(), `${slug}.mdx`);
   if (!existsSync(path)) return Response.json({ error: "Article not found" }, { status: 404 });
 
@@ -34,8 +47,6 @@ export async function POST(req: Request) {
     let result: { url: string };
     if (platform === "devto") {
       result = await publishToDevto(article as Parameters<typeof publishToDevto>[0], opts);
-    } else if (platform === "hashnode") {
-      result = await publishToHashnode(article as Parameters<typeof publishToHashnode>[0], opts);
     } else {
       return Response.json({ error: "Unknown platform" }, { status: 400 });
     }
