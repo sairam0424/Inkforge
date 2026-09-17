@@ -61,7 +61,6 @@ jobs:
 
       - name: Dependency audit
         run: pnpm audit --audit-level high
-        continue-on-error: true
 
       - name: Scan for hardcoded secrets
         run: |
