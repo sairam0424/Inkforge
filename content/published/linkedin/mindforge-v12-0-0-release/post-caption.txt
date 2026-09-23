@@ -1,0 +1,37 @@
+MindForge just shipped v12.0.0 — its first release built specifically for real external users, not just internal iteration.
+
+Here's what you actually get:
+
+→ 221 slash commands (/mindforge:plan-phase → execute-phase → verify-phase → ship)
+→ 354 skills across two tiers — 232 auto-triggered by keyword, 122 invoked by name
+→ 216 personas — in-session role overlays you call by name
+→ 164 subagents — real isolated execution contexts, 154 adapted from VoltAgent's MIT-licensed library
+→ 35 multi-agent orchestration workflows across 5 tiers
+
+Here's the part most agent-tooling projects won't tell you: almost all of that is advisory. It is context the model can choose to follow, not something enforced. The only real enforcement is 3 deny-class hooks, and only on Claude Code with a local install. MindForge says this about itself in its own README, instead of implying otherwise.
+
+Before this release, an 8-agent audit caught a live jailbreak skill shipping unconditionally in the published package and a security check that could structurally never fail. All disclosed, all fixed.
+
+And here's the part I actually like most: MindForge builds itself using MindForge. Its own repo runs the same plan-phase → execute-phase → verify-phase → ship loop described above, the same hooks are live on its own project, and its tamper-evident audit chain has over 6,400 real entries going back three months of actually building this thing with itself, not a demo. That's real dogfooding, not a slide.
+
+Get started:
+npx mindforge-cc@latest --claude --local
+
+4 other real ways to get it, pick whichever fits:
+Claude Code plugin, no project files written:
+/plugin marketplace add sairam0424/MindForge
+/plugin install mindforge@mindforge
+
+Homebrew:
+brew install sairam0424/tap/mindforge
+
+Standalone MCP server (just the 8 tool-calling endpoints, nothing else):
+claude mcp add mindforge -- npx -y mindforge-mcp-server
+
+Building on top of it programmatically:
+npm i mindforge-sdk
+
+Full writeup: https://dev.to/sai_ram_0000/mindforge-v1200-an-agentic-framework-for-claude-code-what-it-ships-how-to-install-it-and-3ncb
+Also on Substack: https://sairam0000.substack.com/p/mindforge-v1200-an-agentic-framework
+npm: https://www.npmjs.com/package/mindforge-cc
+GitHub Release: https://github.com/sairam0424/MindForge/releases/tag/v12.0.0
