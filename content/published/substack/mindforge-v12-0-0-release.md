@@ -31,15 +31,14 @@ https://giphy.com/gifs/drawing-notes-scribble-hqqu3NvxUJ07boRjqP
 
 The part that isn't theater, though, is the actual working loop: plan-phase → execute-phase → verify-phase → ship. It's worth walking through because it's genuinely detailed machinery, not just four command names in a row. Plan-phase spawns a research subagent and writes atomic XML plan files with explicit `<verify>` steps. Execute-phase runs dependency-aware waves against a five-level escalating validation ladder — static, unit, build, integration, edge — and writes a Deviation Report per task. Verify-phase walks a human through the REQUIREMENTS.md deliverables and writes UAT.md, spawning a debug subagent if something fails. Ship gates on UAT.md actually reading "All passed," then runs `tsc --noEmit`, `eslint`, `npm test`, and `npm audit` before generating the PR description. That's real scaffolding. But even here there's a live wrinkle I'd be doing you a disservice to smooth over: `ship.md`'s Step 4 currently hardcodes a literal branch name into its `git push` instead of deriving the active branch, so anyone not literally on that named branch could push somewhere they didn't intend to. Small thing. Worth knowing before you rely on it.
 
-## Five Mechanisms, Five Different Levels of Trust
+## Six Mechanisms, Six Different Levels of Trust
 
 If there's one thing I wish more launch posts did, it's this: instead of flattening "we ship commands and skills and agents" into one undifferentiated pile of "AI capabilities," actually explain how each piece works mechanically — because in MindForge's case, the differences aren't cosmetic. Here's the whole surface area, verified count by verified count, before I walk through it:
 
 | Mechanism | Count | Invoked via | What it mechanically is | Enforced or advisory |
 |---|---|---|---|---|
 | Slash commands | 221 | `/mindforge:<name>` | `.md` prompt specs the model reads and can choose to follow | Advisory |
-| Skills — engine tier | 232 | Auto-triggered by keyword match | An LLM-followed protocol spec does the matching — non-deterministic, not a parser | Advisory |
-| Skills — extended tier | 122 | Invoked explicitly by name | Same skill mechanism, lenient schema (only a name is required) | Advisory |
+| Skills (two tiers) | 354 — 232 engine-tier + 122 extended-tier | Engine tier auto-triggers by keyword; extended tier is invoked explicitly by name | Same underlying mechanism, two schemas: engine tier's matching is an LLM-followed protocol spec — non-deterministic, not a parser; extended tier only requires a name | Advisory |
 | Personas | 216 | `/mindforge:agent <name>` | An in-session role overlay — same context, not a new agent | Advisory |
 | Subagents | 164 (154 adapted from VoltAgent's MIT-licensed library + 10 original) | Claude Code's native subagent mechanism, via the plugin marketplace | A genuinely isolated execution context — a separate mechanism from personas | Advisory (the definition; the isolation itself is Claude Code's) |
 | Dynamic workflows | 35, across 5 tiers (Research 5 / Dev 14 / Ops 6 / Intelligence 7 / Beast 3) | Claude Code's own host-level `Workflow` tool | Curated orchestration scripts targeting a host capability MindForge doesn't itself implement | Advisory |

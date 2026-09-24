@@ -66,13 +66,12 @@ The real working loop that MindForge scaffolds is plan-phase → execute-phase �
 
 ## The Building Blocks: Five Different Mechanisms, Five Different Levels of Trust
 
-MindForge's surface area breaks into five genuinely distinct mechanisms, and the differences between them are mechanical, not just naming conventions. Here's what it actually gives you, at a glance, verified count by verified count:
+MindForge's surface area breaks into six genuinely distinct mechanisms (five advisory, one enforced), and the differences between them are mechanical, not just naming conventions. Here's what it actually gives you, at a glance, verified count by verified count:
 
 | Mechanism | Count | Invoked via | What it mechanically is | Enforced or advisory |
 |---|---|---|---|---|
 | Slash commands | 221 | `/mindforge:<name>` | `.md` prompt specs the model reads and can choose to follow | Advisory |
-| Skills — engine tier | 232 | Auto-triggered by keyword match | An LLM-followed protocol spec (`.mindforge/engine/skills/loader.md`) does the matching — non-deterministic, not a parser | Advisory |
-| Skills — extended tier | 122 | Invoked explicitly by name | Same skill mechanism, lenient schema (only a name is required) | Advisory |
+| Skills (two tiers) | 354 — 232 engine-tier + 122 extended-tier | Engine tier auto-triggers by keyword; extended tier is invoked explicitly by name | Same underlying mechanism, two schemas: engine tier's matching is an LLM-followed protocol spec (`.mindforge/engine/skills/loader.md`) — non-deterministic, not a parser; extended tier only requires a name | Advisory |
 | Personas | 216 | `/mindforge:agent <name>` | An in-session role overlay — same context, not a new agent | Advisory |
 | Subagents | 164 (154 adapted from VoltAgent's MIT-licensed library + 10 original) | Claude Code's native subagent mechanism, via the plugin marketplace | A genuinely isolated execution context — a separate mechanism from personas | Advisory (the definition; the isolation itself is Claude Code's) |
 | Dynamic workflows | 35, across 5 tiers (Research 5 / Dev 14 / Ops 6 / Intelligence 7 / Beast 3) | Claude Code's own host-level `Workflow` tool | Curated multi-agent orchestration scripts targeting a host capability MindForge doesn't itself implement | Advisory |
