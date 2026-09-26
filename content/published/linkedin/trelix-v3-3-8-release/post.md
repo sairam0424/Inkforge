@@ -13,5 +13,5 @@ See post-caption.txt
 ## Upload instructions
 
 1. Go to LinkedIn -> Create post
-2. Paste post-caption.txt as the post body (as-is, no edits needed - links already point to the real, live Dev.to and Substack URLs)
+2. Paste post-caption.txt as the post body (as-is, no edits needed - the GitHub repo and Substack "Full writeup" links already point to the real, live URLs; there is no Dev.to link in this caption, per the note above)
 3. Add a genuine reply to the first few comments within 2 hours
