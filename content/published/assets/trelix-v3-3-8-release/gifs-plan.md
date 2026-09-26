@@ -1,5 +1,3 @@
----
-
 # GIF Plan — Trelix v3.3.8 Release Article (Adversarial Fit-Review)
 
 Consolidated from 4 parallel research passes (production-verification, security-cve, drawio-diagram, performance-speedup), then independently re-verified by a separate reviewer who re-ran the oEmbed lookup for every finalist and backup, re-confirmed HTTP 200 / `content-type: image/gif` via `curl -I`, downloaded each finalist's `.gif`, and `ffmpeg`-extracted a real frame for direct visual inspection — matching this series' standing verification method (MindForge v12.0.0 gifs-plan.md), because Giphy's own `oEmbed` title metadata does not always match a GIF's real content (see the honesty note on candidate 1 below) and cannot be trusted on its own.
