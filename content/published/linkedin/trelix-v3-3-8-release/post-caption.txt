@@ -1,0 +1,17 @@
+trelix v3.3.8 closes out thirteen releases of work since v3.2.1: a manual audit that grew into permanent release-gating CI, a new .drawio diagram connector, and a GitHub App for PR review that's live in production without ever claiming a Marketplace listing.
+
+What is new since v3.2.1:
+
+-> Found by installing the actual published artifacts, not by reading source: the Docker image was missing its own trelix-mcp binary, and the console script ignored every flag it was given
+-> Added scripts/verify_release.py: 5 independent checks (PyPI installs, Docker pulls, Helm lint, GitHub release binaries, pip-audit) that now gate every tag before it's allowed to publish
+-> A qualified-name-collision audit found 19 confirmed defects across 7 subsystems, all the same bug shape, in Java records, Rust imports, and retriever symbol IDs
+-> litellm bumped past 2 CRITICAL CVEs (CVSS 9.8 each: a Host-header auth bypass, an unauthenticated SSTI-to-RCE) plus a separate SSRF issue
+-> Shipped a fifth connector: trelix connector sync <repo> diagram reads local .drawio files as plain mxGraph XML, no vision model involved
+-> The GitHub App for PR review is hardened and running in production right now - explicitly not Marketplace-listed, per the repo's own README
+-> Retriever caching landed and the fix is real, but the changelog's "24.5x-52.7x" multiplier isn't backed by anything I could find in the actual commit
+
+v3.3.8 is confirmed live on PyPI across all four packages, checked directly against the index, not read off the changelog.
+
+MIT licensed. GitHub: https://github.com/sairam0424/trelix
+
+Full writeup: https://sairam0000.substack.com/p/trelix-v322-to-v338-a-github-app?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
