@@ -1,0 +1,20 @@
+cost-guard-mcp gives AI agents pre-flight cost and byte estimates for BigQuery and Snowflake queries, so a warehouse scan gets flagged and capped before it runs, not after the bill shows up.
+
+What it does:
+
+-> Ships three MCP tools: describe_engine_capabilities(engine), estimate_query_cost(engine, sql, warehouse), and run_query_bounded(engine, sql, max_bytes_billed, max_rows, max_estimated_cost_usd)
+-> Every estimate carries a required accuracy_tier: PRECISE (BigQuery dry-run, real planner response), UPPER_BOUND (Snowflake EXPLAIN's bytesAssigned, a ceiling not a measurement)
+-> HEURISTIC is reserved for Databricks in the type system only, deferred past v1 rather than shipped as a disguised guess
+-> run_query_bounded fails closed: if max_estimated_cost_usd is set but the estimate has no dollar figure, it refuses with status "refused" instead of running uncapped
+-> Snowflake connections require an explicit SNOWFLAKE_ROLE env var with no default, specifically to block a silent fallback to ACCOUNTADMIN
+-> Two injection surfaces closed same-day as found: unvalidated warehouse name in USE WAREHOUSE, and a GCP project ID allowlisted before it's even reachable from a tool parameter
+-> Zero infrastructure to stand up: it's a single stdio process, no database, no server to deploy
+-> v0.1.1 added PyPI Trusted Publishing (OIDC, no stored token), CodeQL, OpenSSF Scorecard, secret scanning, and branch protection, all one day after v0.1.0 shipped
+-> 60 unit tests pass (pytest tests/ --ignore=tests/integration), with 5 separate integration tests gated behind scheduled/manual runs against live credentials
+-> Known gaps stated plainly: Databricks unsupported, and Snowflake's estimate excludes Cortex AI Function ("AI Credits") cost entirely
+
+Two days old, one GitHub star, 60 tests passing, zero infrastructure to run it.
+
+MIT licensed. GitHub: https://github.com/mcpsmiths/cost-guard-mcp
+
+Full writeup: https://sairam0000.substack.com/p/why-i-built-cost-guard-mcp-pre-flight?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true

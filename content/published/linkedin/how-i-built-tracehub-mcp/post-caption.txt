@@ -1,0 +1,21 @@
+tracehub-mcp gives AI assistants a direct MCP query interface into your OpenTelemetry and LLM trace data across five backends, replacing the copy-paste-JSON-into-chat workflow with tool calls like search_traces and get_llm_model_stats.
+
+What it does:
+
+-> Speaks five trace backends through one BaseBackend interface: Jaeger, Grafana Tempo, Traceloop (inherited) plus Datadog and Sentry (new, this release).
+-> Datadog and Sentry ship as full implementations of search_traces, search_spans, get_trace, and list_services, not partial stubs.
+-> Both new backends enforce HTTPS-only construction, raising a ValueError in __init__ if the URL isn't https://.
+-> Query values are escaped via dedicated functions per backend, with field names checked against a regex allowlist before touching the query string.
+-> Pagination on both is bounded at 10 pages max, with a logged warning if a search gets truncated before the cursor runs out.
+-> get_trace on both backends re-verifies every returned span against the exact requested trace ID before it's returned, since Datadog has no native trace-by-ID endpoint.
+-> Malformed responses are rejected outright, not patched with placeholder values, so a bad timestamp or missing service name never fabricates data.
+-> Jaeger, Tempo, and Traceloop are explicitly not retrofitted to this bar, a deliberate scope decision stated in the README, not an oversight.
+-> Fixed a data-loss bug where any span with gen_ai.response.finish_reasons silently vanished from Jaeger and Tempo results due to a list vs string type mismatch.
+-> Switched four trace-hydration tools from sequential get_trace calls to a single asyncio.gather batch, with a regression test on the max concurrency.
+-> Hardened CI: removed a script-injection-adjacent pattern in docker-publish.yml and deleted a fake visibility step that always reported success despite failing.
+
+467 tests passing, 2 skipped, 87 percent coverage, plus a GHCR Docker image published for linux/amd64 and linux/arm64 with native gen_ai.* semantic convention support.
+
+Apache 2.0. GitHub: https://github.com/mcpsmiths/tracehub-mcp
+
+Full writeup: https://sairam0000.substack.com/p/tracehub-mcp-giving-ai-assistants?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true

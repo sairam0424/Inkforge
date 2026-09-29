@@ -1,0 +1,6 @@
+Links for both, in one place:
+
+tracehub-mcp -- GitHub: https://github.com/mcpsmiths/tracehub-mcp
+tracehub-mcp -- Full writeup: https://sairam0000.substack.com/p/tracehub-mcp-giving-ai-assistants?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+cost-guard-mcp -- GitHub: https://github.com/mcpsmiths/cost-guard-mcp
+cost-guard-mcp -- Full writeup: https://sairam0000.substack.com/p/why-i-built-cost-guard-mcp-pre-flight?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
