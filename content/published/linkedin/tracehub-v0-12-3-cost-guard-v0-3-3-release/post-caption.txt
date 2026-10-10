@@ -1,0 +1,38 @@
+tracehub-mcp v0.12.3 and cost-guard-mcp v0.3.3 shipped to PyPI twelve minutes apart today, and in both the code was right while the metadata describing it to registries and directories kept drifting.
+
+What is new:
+
+-> tracehub-mcp: 126 commits since v0.4.0 took backends 5 to 8 (AWS X-Ray, New Relic, Honeycomb) and tools 11 to 19, each built from vendor docs with no live account
+-> tracehub-mcp: a live Datadog trial showed every gen_ai tool had returned empty since day one (Datadog nests OTel attributes under attributes.custom)
+-> tracehub-mcp: the committed server.json read 0.4.0 for eleven tags and a 100-character registry limit killed two release runs; test_discoverability_sync.py now pins both
+-> tracehub-mcp install: claude mcp add tracehub-mcp -e BACKEND_TYPE=jaeger -e BACKEND_URL=http://localhost:16686 -- uvx tracehub-mcp
+-> cost-guard-mcp: run_query_bounded had no warehouse_size parameter, so every Snowflake cap was priced as XSMALL: up to 512x understated, 1536x with edition
+-> cost-guard-mcp: the secret redactor stopped at whitespace (password=hunter two logged "two"); Databricks landed as a third engine, tagged HEURISTIC
+-> cost-guard-mcp install: claude mcp add --scope user cost-guard-mcp -- uvx cost-guard-mcp, then add -e credential flags or every engine returns ok: false
+-> Honest gap: the official MCP Registry still shows cost-guard-mcp at 0.3.2 (no registry step in release.yml, no PyPI keywords, a README otel extra that does not exist); tracehub-mcp's README still says "all five backends"
+
+Both live on PyPI 2026-10-10 with PEP 740 provenance; only tracehub-mcp is isLatest on the official MCP Registry.
+
+Where they are live (all checked today):
+
+tracehub-mcp (Apache-2.0)
+GitHub: https://github.com/mcpsmiths/tracehub-mcp
+PyPI: https://pypi.org/project/tracehub-mcp/
+MCP Registry: https://registry.modelcontextprotocol.io/v0/servers/io.github.mcpsmiths%2Ftracehub-mcp/versions
+Docker: https://github.com/mcpsmiths/tracehub-mcp/pkgs/container/tracehub-mcp
+mcprush: https://mcprush.com/mcpsmiths/tracehub-mcp
+Glama: https://glama.ai/mcp/servers/mcpsmiths/tracehub-mcp
+M8ven: https://m8ven.ai/mcp/mcpsmiths/tracehub-mcp
+
+cost-guard-mcp (MIT)
+GitHub: https://github.com/mcpsmiths/cost-guard-mcp
+Release v0.3.3 (signed wheel, sdist, SLSA, SBOM): https://github.com/mcpsmiths/cost-guard-mcp/releases/tag/v0.3.3
+PyPI: https://pypi.org/project/cost-guard-mcp/
+MCP Registry (still 0.3.2): https://registry.modelcontextprotocol.io/v0/servers/io.github.mcpsmiths%2Fcost-guard-mcp/versions
+mcprush: https://mcprush.com/mcpsmiths/cost-guard-mcp
+Glama: https://glama.ai/mcp/servers/mcpsmiths/cost-guard-mcp
+M8ven: https://m8ven.ai/mcp/mcpsmiths/cost-guard-mcp
+MCP Marketplace: https://mcp-marketplace.io/server/io-github-mcpsmiths-cost-guard-mcp
+
+Full writeup: https://sairam0000.substack.com/p/tracehub-mcp-v0123-and-cost-guard
+Dev.to: https://dev.to/sai_ram_0000/tracehub-mcp-v0123-and-cost-guard-mcp-v033-two-mcp-servers-shipped-the-same-morning-and-the-1d0
