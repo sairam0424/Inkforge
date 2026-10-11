@@ -1,5 +1,6 @@
 {
   "name": "@inkforge/web",
+  "description": "Inkforge web UI: generate, browse and publish articles from the browser",
   "version": "0.1.1",
   "private": true,
   "scripts": {

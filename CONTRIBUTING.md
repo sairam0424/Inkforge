@@ -25,7 +25,7 @@ cd Inkforge
 pnpm install
 cp .env.example .env          # fill in BEDROCK_ or ANTHROPIC_API_KEY at minimum
 pnpm build
-pnpm test                     # should show 11/11 passing
+pnpm test                     # all vitest suites in packages/core must pass
 ```
 
 ---
@@ -114,7 +114,7 @@ Rules:
 ## Adding a Publisher
 
 1. Create `packages/core/src/publishers/<platform>.ts`
-2. Export `publishTo<Platform>(article, opts)` returning `{ url: string }`
+2. Export `publishTo<Platform>(article, opts)` returning `{ id, url }`
 3. Auth via `process.env.PLATFORM_API_KEY` — never hardcode
 4. Add a subpath export to `packages/core/package.json`:
    ```json
@@ -122,7 +122,7 @@ Rules:
      "import": "./dist/publishers/<platform>.js"
    }
    ```
-5. Wire into `packages/cli/src/commands/publish.ts`
+5. Register it in `PUBLISHER_REGISTRY` in `packages/core/src/publishers/registry.ts` (the CLI resolves publishers from the registry); browser-driven publishers should also write a tracking record via `writePublishedTrackingRecord`
 6. Document the env var in `.env.example`
 7. Add platform to `CLAUDE.md` publishing rules section
 

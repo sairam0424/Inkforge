@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-10-11
+
+### Added
+- `apps/web/README.md` (pages, API routes, SSE event shapes, limitations) and a `docs/README.md` index (#62)
+- Terminal demo recording `docs/assets/demo.svg` (a real `inkforge generate` run, asciinema + svg-term) and a self-contained social-preview card `docs/assets/social-preview.{html,png}` (#62)
+
+### Changed
+- Root `README.md` rewritten to the Standard Readme order: dynamic badges only (CI, CodeQL, OpenSSF Scorecard, release, license), table of contents, Quick Start, Install and Run Options, full `generate`/`publish`/`list` flag tables, every environment variable the code reads, Mermaid pipeline diagram, LLM fallback chains as implemented, Supported Platforms table and an honest Status and Roadmap section (#62)
+- `packages/cli/README.md` and `packages/core/README.md` rewritten against the source: exports, defaults, exit codes, publisher contracts, `onProgress` event order, actual test coverage (#62)
+- One short description everywhere: README, root `package.json`, a new `apps/web/package.json` description and the GitHub About text; GitHub topics replaced with 20 descriptive ones; `inkforge --help` prints the CLI package description instead of the old "human-readable MDX" tagline (#62)
+- GitHub Release `v0.1.3` created from the CHANGELOG so the release badge tracks the latest tag
+
+### Fixed
+- Documentation claims corrected in review: `--title` semantics, `pnpm lint` (no linter is wired up), `make ci` audit step is advisory locally, the web app writes relative to `apps/web`, Dev.to tag drop rule, `--platform substack` rejection, Node 20.9 floor from Next.js 16, Commander exit codes, Makefile `.env` parsing, `make publish-status` scope; `SECURITY.md`, `CONTRIBUTING.md`, `docs/architecture.md` and `docs/publishing.md` aligned with the code (#62)
+
+### Known issues
+- `emit` overwrites the generated article with the raw input when `INKFORGE_CONTENT_DIR` does not end in `articles` (#63)
+- `inkforge generate` does not exit in an interactive terminal because the stage spinner is never stopped
+- The CI dependency audit is still red on the `apps/web` advisories listed under 0.1.3; Dependabot #59/#60 (`next` 16.3.8) are pending
+
 ## [0.1.3] - 2026-10-11
 
 ### Added
@@ -141,7 +161,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Conventional Commits enforced
 - Branching strategy: `main` (releases) ← `develop` (integration) ← `feature/*`
 
-[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/sairam0424/Inkforge/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/sairam0424/Inkforge/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/sairam0424/Inkforge/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/sairam0424/Inkforge/compare/v0.1.0...v0.1.1
