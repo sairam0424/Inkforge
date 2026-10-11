@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-10-11
+
+### Added
+
+#### Content pipeline
+- Combined release article for tracehub-mcp v0.12.3 + cost-guard-mcp v0.3.3 (#56) — Dev.to and Substack live; single LinkedIn post listing every surface each server is live on (18 verified links); 5-GIF plan embedded in the body in the single-line `![description](direct-url)` format
+- trelix v3.2.2 → v3.3.8 release article (#53) — Dev.to and Substack live
+- MindForge v12.0.0 first-user-release launch article (#52) — Dev.to and Substack live
+- trelix v3.1.1 and v3.2.1 release articles across Dev.to, Substack and LinkedIn
+- Backlog publish: "How I Built Inkforge" (Dev.to draft) plus DNS and Inkforge platform tracking files
+
+#### Publishers
+- Medium and Hashnode browser-harness publishers in `@inkforge/core` (#46)
+
+#### CI and tooling
+- CodeQL, OSSF Scorecard and gitleaks workflows; dependency audit gate (`pnpm audit --audit-level high`) enforced in CI (#49)
+- Dependabot configuration for npm and GitHub Actions
+- GitHub Actions SHA-pinned with explicit least-privilege permissions
+- Tailored CodeRabbit review configuration (#47)
+
+### Changed
+- `next` 16.2.9 → 16.2.11 → 16.3.3 to patch transitive postcss and sharp CVEs (#30, #40); `@tailwindcss/postcss` 4.3.1 → 4.3.3 (#39)
+
+### Security
+- Known, not yet fixed: the CI dependency audit currently fails on advisories published after 2026-09-26 in `apps/web`'s tree — `next@16.3.3` (SSRF in Image Optimization, RCE in `next/og`; fixed in ≥16.3.8), `sharp@0.35.4` (librsvg, fixed in ≥0.35.5), `source-map-js`, `vitest`. Dependency bumps are tracked for the next release and are unrelated to the content in this one.
+
 ## [0.1.2] - 2026-06-27
 
 ### Added
@@ -115,7 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Conventional Commits enforced
 - Branching strategy: `main` (releases) ← `develop` (integration) ← `feature/*`
 
-[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/sairam0424/Inkforge/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/sairam0424/Inkforge/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/sairam0424/Inkforge/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/sairam0424/Inkforge/releases/tag/v0.1.0
