@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-10-11
+
 ### Fixed
-- `emit` no longer overwrites the generated article with the raw input when `INKFORGE_CONTENT_DIR` does not end in `articles`; the inputs directory is now derived from the last path segment (sibling `inputs/` for `articles`, `<dir>/inputs/` otherwise) with a guard against ever writing to the article's own path (#63)
-- `inkforge generate` exits after a successful run in interactive terminals; the stage spinner is recoloured at the emit stage instead of being replaced by a second spinner whose timer kept the process alive
+- `emit` no longer overwrites the generated article with the raw input when `INKFORGE_CONTENT_DIR` does not end in `articles`; the inputs directory is now derived from the last path segment (sibling `inputs/` for `articles`, `<dir>/inputs/` otherwise) with a guard against ever writing to the article's own path (#63, #68)
+- `inkforge generate` exits after a successful run in interactive terminals; the stage spinner is recoloured at the emit stage instead of being replaced by a second spinner whose timer kept the process alive (#68)
+
+### Security
+- Dependency advisories patched so `pnpm audit` is clean at every severity and the CI Security Audit job is green again (#67): `next` 16.3.3 → 16.3.8 (critical RCE in `next/og`, high SSRF in Image Optimization, four moderate cache/leak advisories, one low), `sharp` 0.35.4 → 0.35.5 (librsvg CVE-2026-96889), `source-map-js` 1.2.1 → 1.2.2 (event-loop DoS), `vitest`/`@vitest/mocker` 4.1.9 → 4.1.11 (path traversal). Supersedes Dependabot #59/#60.
 
 ## [0.1.4] - 2026-10-11
 
@@ -165,7 +170,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Conventional Commits enforced
 - Branching strategy: `main` (releases) ← `develop` (integration) ← `feature/*`
 
-[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/sairam0424/Inkforge/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/sairam0424/Inkforge/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/sairam0424/Inkforge/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/sairam0424/Inkforge/compare/v0.1.1...v0.1.2
