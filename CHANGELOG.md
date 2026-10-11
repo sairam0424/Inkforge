@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- `emit` no longer overwrites the generated article with the raw input when `INKFORGE_CONTENT_DIR` does not end in `articles`; the inputs directory is now derived from the last path segment (sibling `inputs/` for `articles`, `<dir>/inputs/` otherwise) with a guard against ever writing to the article's own path (#63)
+- `inkforge generate` exits after a successful run in interactive terminals; the stage spinner is recoloured at the emit stage instead of being replaced by a second spinner whose timer kept the process alive
+
 ## [0.1.4] - 2026-10-11
 
 ### Added

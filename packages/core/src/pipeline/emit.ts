@@ -1,5 +1,5 @@
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { basename, dirname, resolve } from "node:path";
 import { computeReadingTime } from "../modes/index.js";
 import type { Outline, GenerationParams, ArticleOutput, EmitResult, Platform, Category } from "../schema/index.js";
 
@@ -11,7 +11,8 @@ const CWD = process.cwd();
 /**
  * Serialise ArticleOutput to MDX frontmatter + body and write to both sinks.
  *
- * Primary sink:  INKFORGE_CONTENT_DIR (defaults to ../../content/articles/)
+ * Primary sink:  INKFORGE_CONTENT_DIR (defaults to content/articles, resolved against process.cwd())
+ * Input sink:    sibling inputs/ when the content directory is named "articles", otherwise <contentDir>/inputs/
  * Anvilry sink:  INKFORGE_ANVILRY_NOTES_DIR (optional, skipped if not set)
  */
 export function emit(
@@ -58,13 +59,20 @@ export function emit(
   const primaryPath = resolve(primaryDir, filename);
   writeFileSync(primaryPath, mdx, "utf-8");
 
-  // Input source sink — save raw input to content/inputs/<category>/<slug>.md
-  // This ensures the original notes are never lost and can be regenerated.
+  // Input source sink — save the raw input so the article can be regenerated.
+  // content/articles -> content/inputs (sibling). Any other directory name keeps
+  // the raw input inside it under inputs/, which can never collide with
+  // <category>/<slug>.md because "inputs" is not a category (see #63).
   if (rawInput) {
-    const inputsBase = baseContentDir.replace(/articles$/, "inputs");
-    const inputDir = resolve(inputsBase, category);
-    ensureDir(inputDir);
-    writeFileSync(resolve(inputDir, `${outline.slug}.md`), rawInput, "utf-8");
+    const inputsBase =
+      basename(baseContentDir) === "articles"
+        ? resolve(dirname(baseContentDir), "inputs")
+        : resolve(baseContentDir, "inputs");
+    const inputPath = resolve(inputsBase, category, `${outline.slug}.md`);
+    if (inputPath !== primaryPath) {
+      ensureDir(dirname(inputPath));
+      writeFileSync(inputPath, rawInput, "utf-8");
+    }
   }
 
   // Anvilry mirror sink (optional)
