@@ -27,13 +27,13 @@ Please include:
 
 ### API Keys & Credentials
 
-Inkforge handles several external API credentials (AWS Bedrock, Anthropic, Dev.to, Hashnode).
+Inkforge handles several external API credentials (AWS Bedrock, Anthropic, Dev.to). Medium and Hashnode publishing drive your own logged-in Chrome through browser-harness and need no API key.
 
 - All credentials are loaded **exclusively** from environment variables — never hardcoded
 - `.env` is gitignored and must never be committed
 - See `.env.example` for the complete list of required variables
 - Base64 credential handling in `packages/core/src/llm/index.ts` uses round-trip equality verification to prevent accidental decoding of non-base64 values
-- The `bedrockCreds()` function uses `BEDROCK_REGION` instead of `AWS_REGION` to avoid Vercel/Lambda platform mangling of reserved variable names
+- The `bedrockCreds()` function reads `BEDROCK_REGION` first and falls back to `AWS_REGION`, then `us-east-1`, so platforms that mangle reserved variable names can use the dedicated name
 
 ### LLM Input and Output
 
@@ -44,9 +44,9 @@ Inkforge handles several external API credentials (AWS Bedrock, Anthropic, Dev.t
 
 ### Publishing Credentials
 
-- Dev.to and Hashnode API keys are used solely for publishing — stored in `.env`
+- The Dev.to API key is used solely for publishing — stored in `.env`. `HASHNODE_API_KEY` is legacy (Hashnode's public API was decommissioned) and is read only for a status indicator in the web UI
 - Published content sets `canonical_url` pointing back to your portfolio — cross-posting is SEO-safe
-- The `/api/config` endpoint in `@inkforge/web` returns **only boolean flags** — never exposes actual key values
+- The `/api/config` endpoint in `@inkforge/web` returns configured/not-configured booleans, the provider name and the content and mirror directory paths — never actual key values
 
 ### Supply Chain
 

@@ -101,7 +101,7 @@ The web UI parses SSE events (`data: {json}\n\n`) from a `ReadableStream`. Each 
 
 ### Path Resolution
 
-All output paths in `emit.ts` resolve relative to `process.cwd()` — the directory from which the CLI or Next.js server is invoked. This makes `INKFORGE_CONTENT_DIR=content/articles` resolve to `<project-root>/content/articles` regardless of package depth.
+All output paths in `emit.ts` resolve relative to `process.cwd()`, the directory the host process was started from. For the CLI run from the repo root, `INKFORGE_CONTENT_DIR=content/articles` lands in `<repo>/content/articles`. The Next.js server runs with `apps/web` as its cwd, so relative values land under `apps/web/` while the web read paths (`apps/web/src/lib/env.ts`) resolve against the repo root; use absolute paths to make both agree.
 
 ### Design System
 
@@ -113,16 +113,12 @@ Matches the Anvilry portfolio dark theme — all CSS custom properties defined i
 
 ```
 content/
-  articles/<category>/<slug>/     ← GITIGNORED (generated output)
-    index.md
-    assets/
-      cover-medium.png            ← 1400×787px, Playwright-rendered
-      diagram-*.png               ← technical diagrams
-      diagram-*.svg               ← source SVGs
-  inputs/<category>/              ← GITIGNORED (raw notes)
-  drafts/
+  articles/<category>/<slug>.md   ← GITIGNORED (generated output, written by emit)
+  inputs/<category>/<slug>.md     ← GITIGNORED (raw input saved per run)
   published/                      ← COMMITTED (tracking records)
     <platform>/<slug>.md
+    linkedin/<slug>/post.md       (slides/ and *.pdf are gitignored)
+    assets/<slug>/                ← COMMITTED (shared media, e.g. GIF plans)
 ```
 
 Generated articles are never committed — they're output, not source. Published tracking records are committed — they're the source of truth for what's live where.

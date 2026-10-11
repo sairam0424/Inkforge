@@ -124,7 +124,7 @@ LinkedIn document/carousel posts achieve 7.00% avg engagement rate (Socialinside
 
 No developer API exists. Workaround:
 
-1. Copy article body from `content/articles/<category>/<slug>/index.md` (everything below frontmatter)
+1. Copy article body from `content/articles/<category>/<slug>.md` (everything below frontmatter)
 2. Paste into Substack editor
 3. Add at the bottom:
    > *Originally published at [your portfolio URL]*
