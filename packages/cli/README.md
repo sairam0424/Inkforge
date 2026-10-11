@@ -28,7 +28,7 @@ Requires Node >= 20 and pnpm >= 9.
 git clone https://github.com/sairam0424/Inkforge.git
 cd Inkforge
 pnpm install
-pnpm build                              # builds @inkforge/core, then @inkforge/cli
+pnpm build                              # turbo: builds @inkforge/core, @inkforge/cli and the Next.js web app
 node packages/cli/dist/index.js --help
 ```
 
@@ -44,8 +44,10 @@ Run the CLI from the repository root. The binary loads `.env` from the current w
 
 ### Synopsis
 
-```
+```text
 Usage: inkforge [options] [command]
+
+Inkforge CLI — generate and publish articles from the terminal
 
 Options:
   -V, --version       output the version number
@@ -97,7 +99,7 @@ inkforge generate --input content/inputs/general/draft.md --watch
 | `--format` | `<format>` | `tutorial` \| `narrative` \| `explainer` \| `opinion` \| `showcase` | `tutorial` |
 | `--length` | `<length>` | `thread` \| `short` \| `medium` \| `comprehensive` | `medium` |
 | `--mode` | `<mode>` | `oneshot` \| `interactive` \| `iterative` | `oneshot` |
-| `--title` | `<title>` | Preferred title hint sent to the outline stage (topic mode only); the outline's own title is what gets written | — |
+| `--title` | `<title>` | Preferred title: replaces the extracted title in every mode; topic mode forwards it to the outline prompt, notes mode uses it to seed the BM25 query; the outline's own title is what gets written | — |
 | `--tags` | `<tags>` | Comma-separated tags, suggested to the outline stage; the final tags are the outline's | inferred by the outline stage |
 | `--platforms` | `<platforms>` | Comma-separated: `devto,hashnode` | `""` |
 | `--category` | `<category>` | `system-design` \| `typescript` \| `react` \| `ai-engineering` \| `career` \| `general` | `general` |
@@ -108,7 +110,7 @@ Details worth knowing:
 
 - **`--length` sets the word budget**: `thread` = 300, `short` = 800, `medium` = 1800, `comprehensive` = 3500 words.
 - **`--mode`**: only `oneshot` is implemented. `interactive` and `iterative` are accepted by the option validator but run the same one-shot pipeline today.
-- **`--title` does not force the title.** It is passed to the outline prompt as a preference in topic mode and ignored for notes/code input; the title written to the article is always the one the outline stage returns.
+- **`--title` does not force the title.** Ingest uses it as the extracted title in every mode; only topic mode forwards it to the outline prompt as a preference, notes mode uses it to seed the BM25 enrichment query, and code mode just replaces the inferred `Deep Dive: <file>` title. The title written to the article is always the one the outline stage returns.
 - **`--code` with a directory** walks it recursively, skips `node_modules`, `dist`, `.next`, `.turbo` and `.git`, collects at most 10 files with the extensions `.ts .tsx .js .jsx .py .go .rs`, and fails if none are found.
 - **`--platforms`** only stamps the `platforms` frontmatter field and prints the matching `inkforge publish` command afterwards; it does not publish. Values other than `devto` and `hashnode` are dropped.
 - **`--watch`** requires `--input`; saves are debounced by 500 ms and a save during an in-flight generation is skipped.
@@ -117,12 +119,12 @@ Details worth knowing:
 Output of a successful run:
 
 - `content/articles/<category>/<slug>.md` — the article, with frontmatter (`slug`, `title`, `date`, `summary`, `tags`, `draft`, `tone`, `format`, `length`, `category`, `wordCount`, `readingTime`, `generatedBy: inkforge`, `platforms`). The base directory is `INKFORGE_CONTENT_DIR` (default `content/articles`) resolved against the current working directory.
-- `content/inputs/<category>/<slug>.md` — the raw notes/topic/code that produced it, so the article can be regenerated. The `inputs` directory is derived by replacing a trailing `articles` in the content directory; if `INKFORGE_CONTENT_DIR` does not end in `articles`, the raw input is written inside the content directory itself.
+- `content/inputs/<category>/<slug>.md` — the raw notes/topic/code that produced it, so the article can be regenerated. The `inputs` directory is derived by replacing a trailing `articles` in the content directory. If `INKFORGE_CONTENT_DIR` does not end in `articles`, the raw input is written to the **same path as the article and overwrites it** (known bug, https://github.com/sairam0424/Inkforge/issues/63); keep the last segment `articles` until that is fixed.
 - `<INKFORGE_ANVILRY_NOTES_DIR>/<slug>.md` — an optional mirror, written only when that variable is set and the directory already exists.
 
 ### `inkforge publish`
 
-Publish a generated article to one or more platforms. The article is located by slug under `INKFORGE_CONTENT_DIR`: first `<category>/<slug>.md` when `--category` is given, then a flat `<slug>.md`, then every category folder (including `<category>/<slug>/index.md`).
+Publish a generated article to one or more platforms. The slug is the one the outline model chose (printed by `generate` and used verbatim as the filename). The article is located by slug under `INKFORGE_CONTENT_DIR`: first `<category>/<slug>.md` when `--category` is given, then a flat `<slug>.md`, then every category folder (including `<category>/<slug>/index.md`).
 
 ```bash
 # Draft on Dev.to (default is draft)
@@ -155,7 +157,7 @@ What each platform needs:
 | Platform | Transport | Requirements | Behaviour |
 |---|---|---|---|
 | `devto` | Dev.to REST API | `DEVTO_API_KEY` | Creates a **new** article on every run (draft unless `--published`); sends `body_markdown`, the first 4 alphanumeric tags, and `canonical_url = <canonical-base>/<slug>`. |
-| `hashnode` | [browser-harness](https://github.com/sairam0424/Inkforge/blob/develop/docs/publishing.md#hashnode-publishing) driving your own logged-in Chrome | `HASHNODE_EDITOR_URL` (your blog's "Write" screen URL), `browser-harness` on `PATH` or `BROWSER_HARNESS_BIN`, Chrome already logged in to Hashnode | Hashnode's public API was decommissioned in 2026-06. Fills title, body and up to 5 tags; clicks Publish only with `--published`. The canonical URL is **not** scripted — set it in Hashnode's SEO settings. Writes `content/published/hashnode/<slug>.md`. |
+| `hashnode` | [browser-harness](../../docs/publishing.md#hashnode-publishing) driving your own logged-in Chrome | `HASHNODE_EDITOR_URL` (your blog's "Write" screen URL), `browser-harness` on `PATH` or `BROWSER_HARNESS_BIN`, Chrome already logged in to Hashnode | Hashnode's public API was decommissioned in 2026-06. Fills title, body and up to 5 tags; clicks Publish only with `--published`. The canonical URL is **not** scripted — set it in Hashnode's SEO settings. Writes `content/published/hashnode/<slug>.md`. |
 | `medium` | browser-harness via `medium.com/p/import` | `--canonical-base` pointing at a **live** page, `browser-harness`, Chrome logged in to Medium | Medium has no public API; it re-parses the live canonical page. The body is checked first and the run aborts on any `###` heading or Markdown table. Clicks Publish only with `--published`. Tags and canonical confirmation in Story Settings are manual. Writes `content/published/medium/<slug>.md`. |
 
 The browser-harness publishers never enter credentials or MFA codes; if Chrome lands on a login wall the command stops with a `LoginRequiredError` and asks you to log in yourself. They only run from this CLI on your own machine, not from the web UI. Substack and LinkedIn are manual flows — see [docs/publishing.md](../../docs/publishing.md) for the full cross-posting order and per-platform rules.
@@ -196,7 +198,7 @@ All variables are read from `.env` in the directory you run the CLI from. See [`
 | Code | When |
 |---|---|
 | `0` | Command finished. Also returned when `generate` option validation fails (`✗ Invalid options:` on stderr), when the pipeline throws (`Generation failed` on stderr), and when `publish` fails on an individual platform (each failure is printed inline) — check stderr, not the exit code, when scripting |
-| `1` | LLM not configured, `--watch` without `--input`, missing or unreadable input path, no source files in a `--code` directory, no input source given, article slug not found, or no `--platform` given |
+| `1` | LLM not configured, `--watch` without `--input`, missing or unreadable input path, no source files in a `--code` directory, no input source given, article slug not found, or no `--platform` given; also any Commander usage error (missing `--slug`, unknown option or command) |
 
 ## Contributing
 

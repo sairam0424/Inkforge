@@ -113,7 +113,7 @@ All types are inferred from Zod schemas in `src/schema/index.ts` and re-exported
 | `content` | `string` (min 1) | required | Notes text, topic string, or concatenated source |
 | `filePaths` | `string[]` | — | Code mode only: each file is read from disk and appended to `content` (unreadable paths are noted, not fatal); also used to infer a fallback title (`Deep Dive: <basename>`) |
 | `params` | `GenerationParams` | required object | See below |
-| `title` | `string` | — | Preferred-title hint for the outline prompt (topic input only); the final title is `Outline.title` |
+| `title` | `string` | — | Replaces the extracted title in every mode; forwarded to the outline prompt only for topic input (notes input uses it to seed the BM25 query); the final title is `Outline.title` |
 | `tags` | `string[]` | `[]` | Suggested to the outline stage; the final tags are `Outline.tags` (the LLM may drop or add) |
 | `platforms` | `("devto" \| "hashnode" \| "medium")[]` | `[]` | Stamped into frontmatter only |
 | `category` | `Category` | `"general"` | `system-design` \| `typescript` \| `react` \| `ai-engineering` \| `career` \| `general` — becomes the output subfolder |
@@ -193,7 +193,7 @@ Both helpers accept the Anthropic SDK message params minus `model` and walk a fa
 
 | Provider | Chain (in order) |
 |---|---|
-| `bedrock` (default) | `us.anthropic.claude-sonnet-4-6` -> `us.anthropic.claude-haiku-4-5-20251001-v1:0` (Opus is deliberately excluded until it is enabled in the AWS account) |
+| `bedrock` (default) | `us.anthropic.claude-sonnet-4-6` -> `us.anthropic.claude-haiku-4-5-20251001-v1:0` (Opus is left out because Bedrock needs per-account model enablement; add it to `BEDROCK_CHAIN` in `src/llm/index.ts` if your account has it) |
 | `anthropic` | `claude-sonnet-4-6` -> `claude-opus-4-7` -> `claude-haiku-4-5` |
 
 `streamText()` emits text deltas as UTF-8 bytes; once any text has been emitted it will not switch models. If the client cannot be initialised it writes `[Error initialising LLM: ...]` into the stream; on an error before the first byte it writes `[LLM error: ...]`; in both cases the stream then closes.
@@ -219,7 +219,7 @@ FORMAT_INSTRUCTIONS.explainer;     // structural instructions for that format
 | `polish` | `src/pipeline/polish.ts` | 1 | Assembled draft -> humanised body (voice, concreteness, transitions, varied sentence length) |
 | `emit` | `src/pipeline/emit.ts` | 0 | Body + outline -> `.md` with frontmatter at `<INKFORGE_CONTENT_DIR>/<category>/<slug>.md`, raw input saved to the sibling `inputs/<category>/<slug>.md`, optional mirror to `INKFORGE_ANVILRY_NOTES_DIR` -> `EmitResult` |
 
-Paths in `emit` resolve against `process.cwd()`, so run the host process from the repository root (or set `INKFORGE_CONTENT_DIR` to an absolute path). The raw-input directory is derived by replacing a trailing `articles` in the content directory with `inputs`; if `INKFORGE_CONTENT_DIR` does not end in `articles`, the raw input is written inside the content directory itself. The frontmatter written is `slug`, `title`, `date`, `summary`, `tags`, `draft: false`, `tone`, `format`, `length`, `category`, `wordCount`, `readingTime`, `generatedBy: inkforge`, `platforms`.
+Paths in `emit` resolve against `process.cwd()`, so run the host process from the repository root, or set `INKFORGE_CONTENT_DIR` to an absolute path **whose last segment is `articles`**. The raw-input directory is derived by replacing that trailing `articles` with `inputs`; if the directory does not end in `articles`, the raw input is written to the same path as the article and overwrites it (known bug, https://github.com/sairam0424/Inkforge/issues/63). The frontmatter written is `slug`, `title`, `date`, `summary`, `tags`, `draft: false`, `tone`, `format`, `length`, `category`, `wordCount`, `readingTime`, `generatedBy: inkforge`, `platforms`.
 
 ## Publishers
 
@@ -234,7 +234,7 @@ Publishers live under subpath exports so that importing one does not pull in the
 
 Contracts to be aware of:
 
-- **Dev.to** always creates a new article; there is no update path. Tags are lower-cased, stripped of hyphens and spaces, capped at 20 characters and at most 4 are sent. `canonical_url` is `<canonicalBase>/<slug>` when `canonicalBase` is given. Non-2xx responses throw `Dev.to API error <status>: <body>`.
+- **Dev.to** always creates a new article; there is no update path. Tags are lower-cased, stripped of hyphens and spaces and capped at 20 characters; any tag that still contains a character outside `a-z0-9` is dropped rather than sanitised, and the first four survivors are sent. `canonical_url` is `<canonicalBase>/<slug>` when `canonicalBase` is given. Non-2xx responses throw `Dev.to API error <status>: <body>`.
 - **Hashnode** exists because Hashnode's public GraphQL API was decommissioned in 2026-06. The publisher fills the title, body and up to 5 tags, clicks Publish only when `published` is true, and does not touch the SEO/canonical panel. The returned `id` is the article slug.
 - **Medium** has no public API, so the publisher imports the live canonical page. Before touching the browser it runs a content check and throws a `MediumContentValidationError` (`err.name === "MediumContentValidationError"`, `err.warnings: ({ type: "h3-heading", line, text } | { type: "table", line })[]`) if the body contains any `###`-or-deeper heading or a Markdown table; pass `force: true` to bypass. The returned `id` is Medium's post id parsed from the URL when available.
 - **Login safety.** Both browser publishers first open the target page and throw `LoginRequiredError` if the resulting URL looks like a login wall. They never type credentials or MFA codes. `browser-harness` is resolved from `BROWSER_HARNESS_BIN` (default `browser-harness` on `PATH`) with a 60-second timeout per script.
@@ -278,7 +278,7 @@ The package reads configuration from `process.env`; load a `.env` file in the ho
 pnpm --filter @inkforge/core test
 ```
 
-Vitest picks up `src/**/__tests__/**/*.test.ts`. The suite covers `ingest`, the Markdown chunker and the publishers (browser-harness is mocked with `vi.mock`); none of it calls an LLM provider. The LLM-backed stages (`outline`, `draft`, `polish`) have no tests yet — [CONTRIBUTING.md](../../CONTRIBUTING.md) requires mocked-LLM unit tests for any new stage.
+Vitest picks up `src/**/__tests__/**/*.test.ts`. Eight files cover `ingest`, the Markdown chunker, the Medium and Hashnode publishers, the browser-harness client, the Medium content validator, the tracking-record writer and the publisher registry (browser-harness is mocked with `vi.mock`); none of it calls an LLM provider. Untested today: the LLM-backed stages (`outline`, `draft`, `polish`), `publishToDevto`, `emit`, `generate()`, `NoteIndex` and `buildEnrichmentContext`, the fallback-eligibility rules in `src/llm/index.ts`, and `computeReadingTime`. [CONTRIBUTING.md](../../CONTRIBUTING.md) requires mocked-LLM unit tests for any new stage.
 
 ## Contributing
 

@@ -4,7 +4,7 @@
 
 AI article generator: notes, a topic or code in, Markdown articles out, cross-posted to Dev.to, Medium and Hashnode
 
-[![CI](https://img.shields.io/github/actions/workflow/status/sairam0424/Inkforge/ci.yml?branch=main&label=CI&logo=github)](https://github.com/sairam0424/Inkforge/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/sairam0424/Inkforge/ci.yml?branch=develop&label=CI&logo=github)](https://github.com/sairam0424/Inkforge/actions/workflows/ci.yml)
 [![CodeQL](https://img.shields.io/github/actions/workflow/status/sairam0424/Inkforge/codeql.yml?branch=develop&label=CodeQL&logo=github)](https://github.com/sairam0424/Inkforge/actions/workflows/codeql.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/sairam0424/Inkforge/badge)](https://scorecard.dev/viewer/?uri=github.com/sairam0424/Inkforge)
 [![Release](https://img.shields.io/github/v/release/sairam0424/Inkforge?label=release)](https://github.com/sairam0424/Inkforge/releases)
@@ -46,7 +46,7 @@ Inkforge takes a Markdown notes file, a one-line topic, or a code file or direct
 
 ## Quick Start
 
-Prerequisites: Node.js 20 or newer and pnpm 9 or newer.
+Prerequisites: Node.js 20.9 or newer (Next.js 16's floor for the web app; CI runs Node 22) and pnpm 9 or newer.
 
 ```bash
 git clone https://github.com/sairam0424/Inkforge.git
@@ -60,14 +60,15 @@ node packages/cli/dist/index.js generate \
   --topic "How DNS resolution works" \
   --tone senior --format explainer --length medium --category system-design
 
-# Push it to Dev.to as a draft (needs DEVTO_API_KEY in .env)
-node packages/cli/dist/index.js publish --slug how-dns-resolution-works --platform devto
+# Push it to Dev.to as a draft (needs DEVTO_API_KEY in .env). Set INKFORGE_CANONICAL_BASE in .env
+# to your own site first: .env.example ships https://sairam.dev/notes and it becomes canonical_url.
+node packages/cli/dist/index.js publish --slug how-dns-resolution-works --platform devto   # use the slug generate printed
 ```
 
 > [!IMPORTANT]
-> Every generation makes several LLM calls (one for the outline, one per section, one for polish) that are billed to **your** AWS Bedrock or Anthropic account. Credentials are read only from `.env`, which is gitignored; never commit it or paste keys into the pipeline input.
+> Every generation makes several LLM calls (one for the outline, one per section, one for polish) that are billed to **your** AWS Bedrock or Anthropic account. Credentials are read from environment variables (normally your gitignored `.env`); never commit it or paste keys into the pipeline input.
 
-The slug printed by `generate` is the one `publish` expects. `inkforge publish` creates drafts by default; add `--published` to go live.
+The slug is chosen by the outline model and used verbatim as the filename; the one printed by `generate` is what `publish` expects (the example above is from a real run). `inkforge publish` creates drafts by default; add `--published` to go live.
 
 ## Install and Run Options
 
@@ -77,7 +78,7 @@ The packages are not published to npm yet, so there is no `npm install` or `npx`
 |---|---|---|
 | From source (pnpm) | `pnpm install && pnpm build`, then `node packages/cli/dist/index.js <command>` | The CLI is `@inkforge/cli`; `alias inkforge="node $PWD/packages/cli/dist/index.js"` gives you the short form used below |
 | Make targets | `make install build`, then `make generate TOPIC="..."` | `make help` lists every target; `.env` is loaded automatically |
-| Web UI | `pnpm --filter @inkforge/web dev` (or `make dev-web`), open `http://localhost:3000` | Same pipeline and `.env`, with streaming progress in the browser (no BM25 enrichment in the web path) |
+| Web UI | `pnpm --filter @inkforge/web dev` (or `make dev-web`), open `http://localhost:3000` | Same pipeline and `.env`, with streaming progress in the browser (no BM25 enrichment in the web path). The Next.js process runs from `apps/web`, so a relative `INKFORGE_CONTENT_DIR` lands under `apps/web/content/`; use an absolute path to share output with the CLI |
 
 ## Configuration
 
@@ -91,7 +92,7 @@ Copy `.env.example` to `.env`; the variables it ships are listed below, plus two
 | `BEDROCK_SESSION_TOKEN` | Optional | Temporary-credential session token, raw or base64-encoded (not in `.env.example`) |
 | `BEDROCK_REGION` | Optional | `us-east-1`; falls back to `AWS_REGION` first if `BEDROCK_REGION` is unset |
 | `ANTHROPIC_API_KEY` | `LLM_PROVIDER=anthropic` | Anthropic API key |
-| `INKFORGE_CONTENT_DIR` | Optional | `content/articles`, resolved from the directory you run the command in |
+| `INKFORGE_CONTENT_DIR` | Optional | `content/articles`, resolved from the directory you run the command in. The last path segment must be `articles`: the raw-input directory is derived by swapping that suffix for `inputs`, and with any other name the raw input overwrites the generated article (https://github.com/sairam0424/Inkforge/issues/63) |
 | `INKFORGE_NOTES_DIRS` | Optional | Colon-separated extra directories to index for BM25 enrichment, in addition to `INKFORGE_CONTENT_DIR` (not in `.env.example`) |
 | `INKFORGE_ANVILRY_NOTES_DIR` | Optional | Portfolio mirror directory for a second copy of each article; unset, or pointing at a directory that does not exist, disables the mirror |
 | `DEVTO_API_KEY` | Publishing to Dev.to | Dev.to API key |
@@ -122,7 +123,7 @@ inkforge list                 List generated articles
 | `--format <format>` | `tutorial` `narrative` `explainer` `opinion` `showcase` | `tutorial` |
 | `--length <length>` | `thread` `short` `medium` `comprehensive` | `medium` |
 | `--mode <mode>` | `oneshot` (reserved: `interactive`, `iterative` are accepted but not implemented) | `oneshot` |
-| `--title <title>` | Override the article title | |
+| `--title <title>` | Preferred title: replaces the extracted title in every mode, but only topic mode forwards it to the outline prompt; the outline's own title is what gets written | |
 | `--tags <tags>` | Comma-separated tags | |
 | `--platforms <platforms>` | Comma-separated publish targets recorded in frontmatter: `devto,hashnode` | `""` |
 | `--category <category>` | `system-design` `typescript` `react` `ai-engineering` `career` `general` | `general` |
@@ -172,7 +173,7 @@ inkforge publish --slug why-idempotency-keys-matter --platform medium hashnode \
 pnpm --filter @inkforge/web dev      # http://localhost:3000
 ```
 
-Pages: `/` (home), `/generate` (form with the tone, format and length dials; category is always `general` from the web UI), `/articles` and `/articles/[slug]` (browse articles; currently only sees flat `.mdx` files, see [Status and Roadmap](#status-and-roadmap)), `/settings` (shows which environment variables are configured, plus the content and mirror directory paths). API routes: `POST /api/generate` streams pipeline progress as server-sent events, `POST /api/publish` runs the publishers, `GET /api/articles` and `GET /api/articles/[slug]` read generated files, `DELETE /api/articles/[slug]` removes a file, `GET /api/config` returns configuration flags and directory paths. The UI uses a dark theme matching the Anvilry portfolio.
+Pages: `/` (home), `/generate` (form with the tone, format and length dials; category is always `general` from the web UI), `/articles` and `/articles/[slug]` (browse articles; currently only sees flat `.mdx` files, see [Status and Roadmap](#status-and-roadmap)), `/settings` (shows which environment variables are configured, plus the content and mirror directory paths). API routes: `POST /api/generate` streams pipeline progress as server-sent events, `POST /api/publish` publishes to Dev.to (Medium and Hashnode return 400 and point to the CLI), `GET /api/articles` and `GET /api/articles/[slug]` read generated files, `DELETE /api/articles/[slug]` removes a file, `GET /api/config` returns configuration flags and directory paths. The UI uses a dark theme matching the Anvilry portfolio.
 
 ### Makefile
 
@@ -186,7 +187,7 @@ make ci                                          # install, build, test, typeche
 ```
 
 > [!TIP]
-> The Makefile loads `.env` itself and exports every variable to the commands it runs. `make env-check` prints a Bedrock-centric checklist of common variables before your first `make generate`; it still lists the legacy `HASHNODE_API_KEY` and does not check `ANTHROPIC_API_KEY` or `HASHNODE_EDITOR_URL`, so treat it as a hint rather than the full picture.
+> The Makefile loads `.env` itself and exports every variable to the commands it runs. Keep `.env` values unquoted and escape any `$` as `$$`: make reads the file as Makefile syntax (quotes are kept literally, `#` starts a comment) and the values it exports take precedence over dotenv. `make env-check` prints a Bedrock-centric checklist of common variables before your first `make generate`; it still lists the legacy `HASHNODE_API_KEY` and does not check `ANTHROPIC_API_KEY` or `HASHNODE_EDITOR_URL`, so treat it as a hint rather than the full picture.
 
 ## Architecture
 
@@ -205,10 +206,10 @@ flowchart LR
 
 **LLM fallback chains** (`packages/core/src/llm/index.ts`, 120 s timeout per attempt; falls through to the next model on connection errors, HTTP 429/404/5xx, model-unavailable 400s and per-model not-authorized 403s, but not on bad credentials):
 
-- Bedrock (default): `us.anthropic.claude-sonnet-4-6` -> `us.anthropic.claude-haiku-4-5-20251001-v1:0` (Opus is deliberately excluded until it is enabled in the AWS account)
+- Bedrock (default): `us.anthropic.claude-sonnet-4-6` -> `us.anthropic.claude-haiku-4-5-20251001-v1:0` (Opus is left out because Bedrock needs per-account model enablement; add it to `BEDROCK_CHAIN` in `packages/core/src/llm/index.ts` if your account has it)
 - Anthropic (`LLM_PROVIDER=anthropic`): `claude-sonnet-4-6` -> `claude-opus-4-7` -> `claude-haiku-4-5`
 
-Depth lives in [docs/architecture.md](docs/architecture.md) (pipeline stages, chunker and BM25 parameters, streaming, path resolution) and [docs/publishing.md](docs/publishing.md) (per-platform rules and the cross-posting order).
+Depth lives in [docs/architecture.md](docs/architecture.md) (pipeline stages, chunker and BM25 parameters, streaming, path resolution) and [docs/publishing.md](docs/publishing.md) (per-platform rules and the cross-posting order); the [docs index](docs/README.md) lists everything. Each package has its own README: [`@inkforge/core`](packages/core/README.md), [`@inkforge/cli`](packages/cli/README.md) and [`@inkforge/web`](apps/web/README.md).
 
 **Content layout**
 
@@ -230,10 +231,10 @@ Generated articles are output, not source, so they are never committed; the trac
 | Platform | How | Needs |
 |---|---|---|
 | Your own site (Anvilry) | Mirrored on every `generate` when `INKFORGE_ANVILRY_NOTES_DIR` is set and the directory exists | `INKFORGE_ANVILRY_NOTES_DIR` |
-| Dev.to | `inkforge publish --platform devto`, REST API, draft unless `--published`, max 4 tags, `canonical_url` set | `DEVTO_API_KEY` |
+| Dev.to | `inkforge publish --platform devto`, REST API, draft unless `--published`, max 4 tags, `canonical_url` set | `DEVTO_API_KEY`, and `INKFORGE_CANONICAL_BASE` pointing at your own site |
 | Medium | `inkforge publish --platform medium`, browser-harness imports the canonical URL via `medium.com/p/import` | `browser-harness`, a logged-in Chrome, a correct canonical base (the CLI always sends `--canonical-base`, defaulting to `INKFORGE_CANONICAL_BASE` and then `https://sairam.dev/notes`, so set yours) |
 | Hashnode | `inkforge publish --platform hashnode`, browser-harness fills your blog's editor (public API decommissioned 2026-06) | `browser-harness`, a logged-in Chrome, `HASHNODE_EDITOR_URL` |
-| Substack | Manual paste with an attribution line; the code stub throws a clear error | Nothing |
+| Substack | Manual paste with an attribution line; `--platform substack` is rejected as an unknown platform | Nothing |
 | LinkedIn | Manual carousel PDF or text post from `content/published/linkedin/<slug>/` | Nothing |
 
 Cross-posting order for SEO: your own site first (sets the canonical source), then Medium, Dev.to, Hashnode, and finally Substack or LinkedIn. The browser-harness publishers never see your password; if Chrome is not logged in they stop and ask you to log in yourself. Medium's import path enforces its editor rules (no H3, no tables) through `medium-content-validator.ts`.
@@ -244,8 +245,8 @@ Cross-posting order for SEO: your own site first (sets the canonical source), th
 pnpm build        # turbo: core -> cli -> web
 pnpm test         # vitest, currently all tests live in packages/core/src/**/__tests__/
 pnpm typecheck    # all packages
-pnpm lint
-make ci           # install + build + test + typecheck + security-scan, mirrors the GitHub Actions job
+pnpm lint         # turbo task exists, but no package defines a lint script yet, so it runs 0 tasks
+make ci           # install + build + test + typecheck + security-scan; same steps as CI, except the local audit is advisory (|| true) while CI fails on high-severity advisories
 ```
 
 Branches flow `feature/*` -> `develop` -> `main`; releases are promoted from `develop` to `main` by PR and recorded in [CHANGELOG.md](CHANGELOG.md) (Keep a Changelog). Commits follow Conventional Commits. New pipeline stages need unit tests with mocked LLM responses; see [CONTRIBUTING.md](CONTRIBUTING.md) for the full checklist, including how to add a publisher or a generation format.
@@ -264,11 +265,14 @@ Honest state of the project today:
 
 - `@inkforge/core` and `@inkforge/cli` are not on npm; run from source or via `make`
 - `--mode interactive` and `--mode iterative` are accepted by the CLI and schema but not implemented in core; every run is `oneshot`
-- Medium and Hashnode publishing depend on `browser-harness` and an already logged-in Chrome; Hashnode's editor selectors were not live-verified, and the canonical URL in Hashnode's SEO settings and Medium's Story Settings still needs a manual check (the tracking record reminds you)
-- `inkforge list` and the web `/articles` page read flat `.mdx` files, so neither sees the `content/articles/<category>/<slug>.md` layout that `generate` writes; use `make content-tree` or `make publish-status` meanwhile
+- Medium and Hashnode publishing depend on `browser-harness` and an already logged-in Chrome; Medium's import flow and Hashnode's editor selectors were not live-verified, and the canonical URL in Hashnode's SEO settings and Medium's Story Settings still needs a manual check (the tracking record reminds you)
+- `inkforge list` and the web `/articles` page read flat `.mdx` files, so neither sees the `content/articles/<category>/<slug>.md` layout that `generate` writes; use `make content-tree` meanwhile (`make publish-status` lists tracking records, not generated articles)
 - The web UI always generates into the `general` category and skips BM25 enrichment
 - Tests cover `@inkforge/core` only; `@inkforge/cli` and `@inkforge/web` have none yet
+- No linter is wired up yet: `pnpm lint` and `make lint` run a turbo task that no package implements
+- `INKFORGE_CONTENT_DIR` must end in `articles` until https://github.com/sairam0424/Inkforge/issues/63 is fixed, otherwise `emit` writes the raw input over the article
 - Substack has no publish API, and LinkedIn is a manual flow by design
+- `browser-harness`, the executable the Medium and Hashnode publishers drive (on `PATH` or named in `BROWSER_HARNESS_BIN`; it reads a script on stdin and prints JSON), is not distributed or documented with this repository yet
 
 ## Contributing
 

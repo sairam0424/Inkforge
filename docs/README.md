@@ -25,9 +25,10 @@ The root [README](../README.md) covers installation and first use. The documents
 |---|---|
 | `@inkforge/core` — generation pipeline, RAG, publishers, schema | [packages/core/README.md](../packages/core/README.md) |
 | `@inkforge/cli` — the `inkforge` command (`generate`, `publish`, `list`) | [packages/cli/README.md](../packages/cli/README.md) |
+| `@inkforge/web` — Next.js UI (`/generate`, `/articles`, `/settings`, SSE API) | [apps/web/README.md](../apps/web/README.md) |
 
-For the authoritative list of CLI flags, run `node packages/cli/dist/index.js --help` after `pnpm build`; for the repo task runner, run `make help`.
+For the authoritative list of CLI flags, run `node packages/cli/dist/index.js generate --help` and `node packages/cli/dist/index.js publish --help` after `pnpm build`; for the repo task runner, run `make help`.
 
 ## Adding documentation
 
-Put user-facing guides in this folder and link them from the table above. Keep the root README limited to getting started and contributing; anything longer belongs here.
+Put user-facing guides in this folder and link them from the table above. The root README carries the overview, quick start and a reference summary (flags, variables, platforms); anything longer or more detailed belongs here. `assets/social-preview.png` is rendered from `assets/social-preview.html` (recipe in that file's header comment) and must be regenerated when the tagline changes.

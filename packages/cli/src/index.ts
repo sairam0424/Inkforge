@@ -7,7 +7,7 @@ import { registerListCommand } from "./commands/list.js";
 
 program
   .name("inkforge")
-  .description("AI-powered article generation — notes/topic/code → human-readable MDX")
+  .description("Inkforge CLI — generate and publish articles from the terminal")
   .version("0.1.1");
 
 registerGenerateCommand(program);
