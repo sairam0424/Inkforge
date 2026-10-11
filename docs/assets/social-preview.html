@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Inkforge — social preview (1280x640)</title>
+<style>
+  html, body { margin: 0; padding: 0; width: 1280px; height: 640px; overflow: hidden; background: #07080d; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #e8ecf3;
+    -webkit-font-smoothing: antialiased;
+  }
+  .card {
+    position: relative; width: 1280px; height: 640px; box-sizing: border-box;
+    padding: 72px 88px 64px 88px;
+    background:
+      radial-gradient(900px 420px at 18% 0%, rgba(56, 225, 255, 0.16), transparent 60%),
+      radial-gradient(700px 360px at 100% 100%, rgba(56, 225, 255, 0.07), transparent 60%),
+      #07080d;
+    overflow: hidden;
+  }
+  .grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), rgba(0,0,0,0.15));
+    -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), rgba(0,0,0,0.15));
+  }
+  .top { position: relative; display: flex; align-items: center; gap: 22px; }
+  .mark {
+    width: 72px; height: 72px; border-radius: 18px; flex: 0 0 72px;
+    background: linear-gradient(160deg, #38e1ff, #0f8fb0);
+    box-shadow: 0 0 0 1px rgba(56,225,255,0.35), 0 18px 40px rgba(56,225,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; line-height: 1; color: #06202a;
+  }
+  h1 { margin: 0; font-size: 84px; font-weight: 800; letter-spacing: -0.035em; line-height: 1; color: #ffffff; }
+  .desc {
+    position: relative; margin: 38px 0 0 0; max-width: 1040px;
+    font-size: 32px; line-height: 1.34; font-weight: 450; color: #b7c0cf;
+  }
+  .desc b { color: #ffffff; font-weight: 650; }
+  .desc .arrow { color: #38e1ff; font-weight: 700; }
+  .pills { position: relative; display: flex; gap: 14px; margin-top: 38px; }
+  .pill {
+    font-size: 20px; font-weight: 600; letter-spacing: 0.01em;
+    padding: 10px 20px; border-radius: 999px;
+    border: 1px solid rgba(56,225,255,0.45); color: #c9f4ff;
+    background: rgba(56,225,255,0.08);
+  }
+  .pipe {
+    position: absolute; left: 88px; right: 88px; bottom: 150px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 19px; color: #7f8aa0; letter-spacing: 0.02em;
+  }
+  .stage {
+    padding: 8px 16px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.03);
+    color: #a7b1c2; white-space: nowrap;
+  }
+  .stage.src { color: #e8ecf3; border-color: rgba(255,255,255,0.18); }
+  .stage.out { color: #38e1ff; border-color: rgba(56,225,255,0.45); background: rgba(56,225,255,0.06); }
+  .arr { color: #38e1ff; font-size: 20px; }
+  .foot {
+    position: absolute; left: 88px; right: 88px; bottom: 56px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 22px; color: #8a94a8;
+  }
+  .foot .repo { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #d6dce6; }
+  .foot .lic { color: #6d7789; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="mark" aria-hidden="true">&#9874;</div>
+    <h1>Inkforge</h1>
+  </div>
+  <p class="desc">AI article generator: <b>notes, a topic or code</b> in, <b>Markdown articles</b> out, cross-posted to <b>Dev.to, Medium and Hashnode</b></p>
+  <div class="pills">
+    <span class="pill">CLI</span>
+    <span class="pill">Web UI</span>
+    <span class="pill">Dev.to &middot; Medium &middot; Hashnode</span>
+  </div>
+  <div class="pipe">
+    <span class="stage src">notes / topic / code</span><span class="arr">&rarr;</span>
+    <span class="stage">ingest</span><span class="arr">&rarr;</span>
+    <span class="stage">outline</span><span class="arr">&rarr;</span>
+    <span class="stage">draft</span><span class="arr">&rarr;</span>
+    <span class="stage">polish</span><span class="arr">&rarr;</span>
+    <span class="stage">emit</span><span class="arr">&rarr;</span>
+    <span class="stage out">publish</span>
+  </div>
+  <div class="foot">
+    <span class="repo">github.com/sairam0424/Inkforge</span>
+    <span class="lic">MIT &middot; TypeScript &middot; Node 20+</span>
+  </div>
+</div>
+</body>
+</html>
