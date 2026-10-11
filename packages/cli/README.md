@@ -119,7 +119,7 @@ Details worth knowing:
 Output of a successful run:
 
 - `content/articles/<category>/<slug>.md` — the article, with frontmatter (`slug`, `title`, `date`, `summary`, `tags`, `draft`, `tone`, `format`, `length`, `category`, `wordCount`, `readingTime`, `generatedBy: inkforge`, `platforms`). The base directory is `INKFORGE_CONTENT_DIR` (default `content/articles`) resolved against the current working directory.
-- `content/inputs/<category>/<slug>.md` — the raw notes/topic/code that produced it, so the article can be regenerated. The `inputs` directory is derived by replacing a trailing `articles` in the content directory. If `INKFORGE_CONTENT_DIR` does not end in `articles`, the raw input is written to the **same path as the article and overwrites it** (known bug, https://github.com/sairam0424/Inkforge/issues/63); keep the last segment `articles` until that is fixed.
+- `content/inputs/<category>/<slug>.md` — the raw notes/topic/code that produced it, so the article can be regenerated. A content directory named `articles` gets a sibling `inputs/` directory (the default `content/articles` → `content/inputs`); any other name gets an `inputs/` directory inside it, so the raw input can never collide with the article.
 - `<INKFORGE_ANVILRY_NOTES_DIR>/<slug>.md` — an optional mirror, written only when that variable is set and the directory already exists.
 
 ### `inkforge publish`

@@ -92,7 +92,7 @@ Copy `.env.example` to `.env`; the variables it ships are listed below, plus two
 | `BEDROCK_SESSION_TOKEN` | Optional | Temporary-credential session token, raw or base64-encoded (not in `.env.example`) |
 | `BEDROCK_REGION` | Optional | `us-east-1`; falls back to `AWS_REGION` first if `BEDROCK_REGION` is unset |
 | `ANTHROPIC_API_KEY` | `LLM_PROVIDER=anthropic` | Anthropic API key |
-| `INKFORGE_CONTENT_DIR` | Optional | `content/articles`, resolved from the directory you run the command in. The last path segment must be `articles`: the raw-input directory is derived by swapping that suffix for `inputs`, and with any other name the raw input overwrites the generated article (https://github.com/sairam0424/Inkforge/issues/63) |
+| `INKFORGE_CONTENT_DIR` | Optional | `content/articles`, resolved from the directory you run the command in. The raw input is saved next to it: a directory named `articles` gets a sibling `inputs/` (the default `content/articles` → `content/inputs`), any other name gets `inputs/` inside it |
 | `INKFORGE_NOTES_DIRS` | Optional | Colon-separated extra directories to index for BM25 enrichment, in addition to `INKFORGE_CONTENT_DIR` (not in `.env.example`) |
 | `INKFORGE_ANVILRY_NOTES_DIR` | Optional | Portfolio mirror directory for a second copy of each article; unset, or pointing at a directory that does not exist, disables the mirror |
 | `DEVTO_API_KEY` | Publishing to Dev.to | Dev.to API key |
@@ -270,7 +270,6 @@ Honest state of the project today:
 - The web UI always generates into the `general` category and skips BM25 enrichment
 - Tests cover `@inkforge/core` only; `@inkforge/cli` and `@inkforge/web` have none yet
 - No linter is wired up yet: `pnpm lint` and `make lint` run a turbo task that no package implements
-- `INKFORGE_CONTENT_DIR` must end in `articles` until https://github.com/sairam0424/Inkforge/issues/63 is fixed, otherwise `emit` writes the raw input over the article
 - Substack has no publish API, and LinkedIn is a manual flow by design
 - `browser-harness`, the executable the Medium and Hashnode publishers drive (on `PATH` or named in `BROWSER_HARNESS_BIN`; it reads a script on stdin and prints JSON), is not distributed or documented with this repository yet
 
