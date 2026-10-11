@@ -17,6 +17,14 @@
     "./publishers/hashnode": {
       "import": "./dist/publishers/hashnode.js",
       "types": "./dist/publishers/hashnode.d.ts"
+    },
+    "./publishers/medium": {
+      "import": "./dist/publishers/medium.js",
+      "types": "./dist/publishers/medium.d.ts"
+    },
+    "./publishers/registry": {
+      "import": "./dist/publishers/registry.js",
+      "types": "./dist/publishers/registry.d.ts"
     }
   },
   "files": ["dist"],

@@ -1,0 +1,20 @@
+trelix v3.1.1 is out — the v3.x line adds six feature areas, every one of them off by default.
+
+What's new since v2.11.0:
+
+-> Hash-chained append-only audit trail in its own SQLite file, with an anchor that catches a deleted tail a chain alone cannot
+-> trelix audit verify exits 1 on tamper, 2 when it cannot check, so a CI gate never passes green on an unread database
+-> OIDC SSO as a resource server: asymmetric-only algorithms, an HTTPS-only host-pinned 1 MiB JWKS fetch, and a real HS256 forgery test
+-> VS Code extension built entirely on the MCP surface — code lenses make zero calls until painted, and chat carries a session_id
+-> Context compression returns a strict superset of the uncompressed selection, so recall, MRR and nDCG cannot regress by construction — and blocks still cite honestly, headers clamped twice
+-> Model-aware context budget — set it to auto and the ceiling comes from the model's real window; candidate depth stays a separate opt-in
+-> Anthropic extended thinking, scoped to retrieval synthesis only so an indexing run never inherits the reasoning cost
+-> FTS5 declaration boost weights name and qualified_name only, moving Database.bm25_search from rank 34 to 9 on trelix's own index
+-> A parser off-by-one corrupted parent, caller and type edges at once, so v3.0.1 needs a reindex — skip it coming from v2.12.0 or v3.0.0 and your call graph is still wrong
+-> Markup and JSON output are now render-safe (graph --json | jq survives FORCE_COLOR=1), plus an opt-in real symlink boundary
+
+2,457 unit tests. Still zero-infra — the audit trail is just a second SQLite file.
+
+MIT licensed. GitHub: https://github.com/sairam0424/trelix
+
+Full writeup: https://sairam0000.substack.com/p/trelix-v2110-to-v311-six-feature?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true

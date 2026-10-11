@@ -1,0 +1,13 @@
+Links here since LinkedIn's preview crawler breaks on more than one URL in a post body.
+
+Full writeup: https://dev.to/sai_ram_0000/mindforge-v1200-an-agentic-framework-for-claude-code-what-it-ships-how-to-install-it-and-3ncb
+Also on Substack: https://sairam0000.substack.com/p/mindforge-v1200-an-agentic-framework
+
+npm package: https://www.npmjs.com/package/mindforge-cc
+MCP server: https://www.npmjs.com/package/mindforge-mcp-server
+SDK: https://www.npmjs.com/package/mindforge-sdk
+GitHub Release: https://github.com/sairam0424/MindForge/releases/tag/v12.0.0
+
+Install: npx mindforge-cc@latest --claude --local
+
+Source and docs are linked from each npm package page above.

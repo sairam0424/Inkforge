@@ -77,7 +77,7 @@ const result = await publishToDevto(article, {
 // → { id: number, url: string }
 ```
 
-> **Hashnode:** `publishToHashnode` is exported but throws immediately — `gql.hashnode.com` was decommissioned in June 2026. Publish to Hashnode manually until a replacement API is available.
+> **Hashnode:** `gql.hashnode.com` was decommissioned in June 2026, so `publishToHashnode` drives your own logged-in Chrome via `browser-harness` instead of calling an API — it only runs from the Inkforge CLI (`inkforge publish --platform hashnode`), which is the only place browser-harness is wired up. Requires `HASHNODE_EDITOR_URL` in `.env` and an already-logged-in Chrome session. See `docs/publishing.md`.
 
 ## Tests
 

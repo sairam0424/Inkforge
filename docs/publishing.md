@@ -6,8 +6,8 @@
 |---|---|---|---|
 | **sairam.dev (Anvilry)** | Auto-mirror on generate | ✅ Native | Velite picks up `.md` + `.mdx` on `pnpm content` |
 | **Dev.to** | `inkforge publish --platform devto` | ✅ REST API | Requires `DEVTO_API_KEY` |
-| **Hashnode** | Manual paste | ❌ API decommissioned (2026-06) | `gql.hashnode.com` shut down — no replacement API yet |
-| **Medium** | Manual paste via `medium.com/p/import` | ❌ Deprecated | Import from URL preserves formatting |
+| **Hashnode** | `inkforge publish --platform hashnode` | ❌ API decommissioned (2026-06) | browser-harness automation against your own logged-in Chrome — requires `HASHNODE_EDITOR_URL`; manual fallback below |
+| **Medium** | `inkforge publish --platform medium` | ❌ No public API | browser-harness automation via `medium.com/p/import` against your own logged-in Chrome; manual fallback below |
 | **Substack** | Manual paste | ❌ No API | Add attribution line at bottom |
 | **LinkedIn** | Manual upload (PDF carousel) | ❌ No public API | Use generated `linkedin-carousel-*.pdf` |
 
@@ -20,9 +20,9 @@ Always publish in this order to establish canonical authority:
 ```
 1. Anvilry (sairam.dev)     ← sets the canonical source
        ↓ wait for deploy (~2 min)
-2. Medium                   ← import from URL → canonical auto-set
+2. Medium                   ← browser-harness automation via medium.com/p/import → canonical auto-set
 3. Dev.to                   ← canonical_url field in API call (automated)
-4. Hashnode                 ← manual paste (API decommissioned 2026-06)
+4. Hashnode                 ← browser-harness automation against your own logged-in Chrome (API decommissioned 2026-06)
 5. Substack / LinkedIn      ← copy-paste with attribution
 ```
 
@@ -31,6 +31,9 @@ The `canonical_url` tells Google which URL is the "original" — cross-posting W
 ---
 
 ## Medium Publishing Rules
+
+**Automated (recommended):** `inkforge publish --slug your-slug --platform medium --canonical-base https://anvilry.vercel.app/notes`
+Drives your own logged-in Chrome via `browser-harness` — never touches your password. If you are not logged in to Medium, it stops and tells you to log in yourself. Scripts the import + Publish click; canonical URL/tags in Story Settings still need a manual check (recorded in the tracking note it writes to `content/published/medium/<slug>.md`).
 
 Medium's editor has specific limitations verified against official docs (2025-2026):
 
@@ -83,7 +86,8 @@ Frontmatter fields sent:
 
 ## Hashnode Publishing
 
-> **API decommissioned.** Hashnode shut down `gql.hashnode.com` in June 2026. No replacement public API has been announced. `inkforge publish --platform hashnode` throws a clear error directing you here.
+**Automated (recommended):** set `HASHNODE_EDITOR_URL` in `.env` to your blog's "Write" screen URL once, then `inkforge publish --slug your-slug --platform hashnode`.
+Drives your own logged-in Chrome via `browser-harness` — never touches your password. If you are not logged in to Hashnode, it stops and tells you to log in yourself. Canonical URL in SEO settings still needs a manual check (recorded in the tracking note it writes to `content/published/hashnode/<slug>.md`).
 
 **Manual workflow (until API is restored):**
 1. Copy article body from `content/articles/<category>/<slug>.md` (everything below frontmatter)

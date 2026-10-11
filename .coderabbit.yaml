@@ -1,0 +1,39 @@
+language: en-US
+tone_instructions: "Direct and pragmatic. Flag correctness and type-safety issues over style nits."
+enable_free_tier: true
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  auto_review:
+    enabled: true
+    drafts: false
+    ignore_usernames: ["dependabot[bot]", "renovate[bot]"]
+    auto_incremental_review: true
+    auto_pause_after_reviewed_commits: 3
+  path_filters:
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/.turbo/**"
+    - "!**/*.generated.*"
+    - "!**/node_modules/**"
+  path_instructions:
+    - path: "packages/cli/src/commands/**"
+      instructions: "Focus on argument validation, error messages, and exit codes."
+    - path: "packages/core/src/publishers/**"
+      instructions: >
+        This is the multi-platform publish layer (Medium, Dev.to, Hashnode,
+        own MDX output). Flag content-integrity or frontmatter regressions,
+        and any change that could silently double-publish or publish to
+        the wrong platform.
+    - path: "packages/core/src/pipeline/**"
+      instructions: "This is the STORM content-generation pipeline. Flag unvalidated LLM output being written to disk or published without a review step."
+  tools:
+    eslint:
+      enabled: true
+    gitleaks:
+      enabled: true
+
+knowledge_base:
+  learnings:
+    scope: local

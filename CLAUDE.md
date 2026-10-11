@@ -133,6 +133,7 @@ Notes about edits made before publishing, platform-specific changes, etc.
 - AI-generated content is DISQUALIFIED from Medium Boost and General Distribution
   → Articles must be human-authored to get meaningful reach beyond followers
 - Opening heading: do NOT start with an H2 — Medium title is set in Story Preview, the first ## is redundant
+- Automated via `inkforge publish --platform medium --canonical-base <url>` (browser-harness, requires an already-logged-in Chrome; `--canonical-base` is required for Medium, unlike Dev.to/Hashnode) — see docs/publishing.md
 
 ## Dev.to Publishing Rules
 - Canonical URL field: `canonical_url` in frontmatter or API body — already wired in publishers/devto.ts
@@ -143,6 +144,7 @@ Notes about edits made before publishing, platform-specific changes, etc.
 - `originalArticleURL` field sets canonical — already wired in publishers/hashnode.ts
 - Max 5 tags
 - Content sent as `contentMarkdown`
+- Automated via `inkforge publish --platform hashnode` (browser-harness, requires `HASHNODE_EDITOR_URL` in `.env` and an already-logged-in Chrome) — see docs/publishing.md
 
 ## SVG → PNG Conversion
 - ALWAYS use Playwright headless Chromium (NOT qlmanage or sips)

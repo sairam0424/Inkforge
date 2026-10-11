@@ -1,0 +1,19 @@
+trelix v3.2.1 closes out eight releases of correctness work since v3.1.1: a retracted embedder claim, a sparse-vector contamination fix, and a mutation-testing baseline built to measure whether tests can actually fail.
+
+What is new since v3.1.1:
+
+-> Retracted bge-code: CLS pooling on a causal Qwen2 decoder collapsed every query embedding into one identical vector since v2.0.0
+-> Fixed sparse-leg padding contamination: unmasked max-pooling let pad-token logits corrupt up to 22% of stored SPLADE terms per chunk
+-> Fixed intent_hint dispatch: all 8 intent values silently took the same direct-answer shortcut since v2.10.0, over both REST and MCP
+-> Fixed federated search-all dedup: row-id collisions could drop an entire repo's results while reporting repos_skipped: 0
+-> trelix audit list/verify/export now open read-only and exit 2, instead of silently creating a schema on non-audit files
+-> Fixed retry.py importing every LLM provider SDK (anthropic, openai, google.genai, boto3, azure) on every retry regardless of backend
+-> Patched a REST path-containment check and a stored XSS in generated graph HTML from an unescaped symbol or filename
+-> Added scoped mutation testing (scripts/mutation.py, mutmut) with a per-module survivor-count baseline in mutation_baseline.json
+-> Enabled branch coverage with per-package floors in check_coverage_floors.py, hermetic pytest-socket runs, and TRELIX_LIVE_LLM_TESTS gating
+
+4,376 unit tests pass on this checkout, with zero infrastructure required to run them.
+
+MIT licensed. GitHub: https://github.com/sairam0424/trelix
+
+Full writeup: https://sairam0000.substack.com/p/trelix-v312-to-v321-the-tests-that?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true

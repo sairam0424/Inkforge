@@ -7,7 +7,7 @@ export function registerPublishCommand(program: Command): void {
     .command("publish")
     .description("Publish a generated article to external platforms")
     .requiredOption("--slug <slug>", "Article slug to publish")
-    .option("--platform <platforms...>", "Platforms: devto hashnode")
+    .option("--platform <platforms...>", "Platforms: devto hashnode medium")
     .option("--published", "Publish publicly (default: draft)")
     .option("--category <category>", "Category folder (default: searches all categories)", "")
     .option("--canonical-base <url>", "Canonical URL base", process.env.INKFORGE_CANONICAL_BASE ?? "https://sairam.dev/notes")
@@ -33,32 +33,28 @@ export function registerPublishCommand(program: Command): void {
       const platforms: string[] = opts.platform ?? [];
 
       if (!platforms.length) {
-        console.error(chalk.red("✗ Specify at least one --platform devto|hashnode"));
+        console.error(chalk.red("✗ Specify at least one --platform devto|hashnode|medium"));
         process.exit(1);
       }
 
       console.log(chalk.dim(`Publishing "${article["title"]}" (${opts.published ? "live" : "draft"})\n`));
 
+      const { resolvePublisher } = await import("@inkforge/core/publishers/registry");
+
       for (const platform of platforms) {
         const spinner = ora(`Publishing to ${platform}…`).start();
         try {
-          if (platform === "devto") {
-            const { publishToDevto } = await import("@inkforge/core/publishers/devto");
-            const result = await publishToDevto(article as Parameters<typeof publishToDevto>[0], {
-              published: opts.published ?? false,
-              canonicalBase: opts.canonicalBase,
-            });
-            spinner.succeed(chalk.green(`Dev.to: ${result.url}`));
-          } else if (platform === "hashnode") {
-            const { publishToHashnode } = await import("@inkforge/core/publishers/hashnode");
-            const result = await publishToHashnode(article as Parameters<typeof publishToHashnode>[0], {
-              published: opts.published ?? false,
-              canonicalBase: opts.canonicalBase,
-            });
-            spinner.succeed(chalk.green(`Hashnode: ${result.url}`));
-          } else {
-            spinner.fail(chalk.yellow(`Unknown platform: ${platform}`));
-          }
+          const { modulePath, exportName } = resolvePublisher(platform);
+          const mod = (await import(modulePath)) as Record<
+            string,
+            (article: unknown, opts: unknown) => Promise<{ url: string }>
+          >;
+          const publishFn = mod[exportName];
+          const result = await publishFn(article, {
+            published: opts.published ?? false,
+            canonicalBase: opts.canonicalBase,
+          });
+          spinner.succeed(chalk.green(`${platform}: ${result.url}`));
         } catch (err) {
           spinner.fail(chalk.red(`${platform}: ${err instanceof Error ? err.message : String(err)}`));
         }
