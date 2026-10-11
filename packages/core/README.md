@@ -219,7 +219,7 @@ FORMAT_INSTRUCTIONS.explainer;     // structural instructions for that format
 | `polish` | `src/pipeline/polish.ts` | 1 | Assembled draft -> humanised body (voice, concreteness, transitions, varied sentence length) |
 | `emit` | `src/pipeline/emit.ts` | 0 | Body + outline -> `.md` with frontmatter at `<INKFORGE_CONTENT_DIR>/<category>/<slug>.md`, raw input saved to the sibling `inputs/<category>/<slug>.md`, optional mirror to `INKFORGE_ANVILRY_NOTES_DIR` -> `EmitResult` |
 
-Paths in `emit` resolve against `process.cwd()`, so run the host process from the repository root, or set `INKFORGE_CONTENT_DIR` to an absolute path **whose last segment is `articles`**. The raw-input directory is derived by replacing that trailing `articles` with `inputs`; if the directory does not end in `articles`, the raw input is written to the same path as the article and overwrites it (known bug, https://github.com/sairam0424/Inkforge/issues/63). The frontmatter written is `slug`, `title`, `date`, `summary`, `tags`, `draft: false`, `tone`, `format`, `length`, `category`, `wordCount`, `readingTime`, `generatedBy: inkforge`, `platforms`.
+Paths in `emit` resolve against `process.cwd()`, so run the host process from the repository root or set `INKFORGE_CONTENT_DIR` to an absolute path. The raw input is saved next to the articles: a directory named `articles` gets a sibling `inputs/` (the default `content/articles` → `content/inputs`); any other name gets `inputs/` inside it, and `emit` never writes the raw input to the article's own path. The frontmatter written is `slug`, `title`, `date`, `summary`, `tags`, `draft: false`, `tone`, `format`, `length`, `category`, `wordCount`, `readingTime`, `generatedBy: inkforge`, `platforms`.
 
 ## Publishers
 

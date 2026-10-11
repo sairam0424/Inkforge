@@ -142,7 +142,7 @@ export function registerGenerateCommand(program: Command): void {
           }
         }
 
-        let spinner = ora({ color: "cyan" }).start();
+        const spinner = ora({ color: "cyan" }).start();
         const stageLabels: Record<GenerationProgress["stage"], string> = {
           ingest: chalk.cyan("Ingesting input…"),
           outline: chalk.cyan("Generating outline…"),
@@ -159,7 +159,9 @@ export function registerGenerateCommand(program: Command): void {
               const label = stageLabels[progress.stage];
               const detail = progress.detail ? chalk.dim(` [${progress.detail}]`) : "";
               spinner.text = label + detail;
-              if (progress.stage === "emit") spinner = ora({ color: "green" }).start();
+              // Recolour the running spinner instead of starting a second one: an
+              // orphaned spinner's interval kept the process alive after success.
+              if (progress.stage === "emit") spinner.color = "green";
             },
           });
 
