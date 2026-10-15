@@ -1,0 +1,20 @@
+Trelix v3.2.5 closes an artifact-verification arc: four releases fixing bugs that only existed in the published wheel, Docker image, and binary, never in the source tree itself.
+
+What is new since v3.2.1:
+
+-> trelix-mcp missing from the published Docker image entirely; docker run --entrypoint trelix-mcp returned exit 127 on the real v3.2.1 image
+-> trelix-mcp --help launched the live MCP stdio server instead of printing usage; no argparse existed on sys.argv at all
+-> escape_like_pattern() fixes SQL LIKE wildcard collisions where path_filter="src_auth" matched "srcXauth" via unescaped underscore
+-> tests/e2e/test_mcp_stdio_e2e.py spawns trelix-mcp as a real subprocess via shutil.which, replacing in-memory mocks that can't see process-boundary bugs
+-> release.yml now hard-gates publish behind smoke-test-built-artifacts, which installs the actual built wheels and runs the e2e suite first
+-> verify-release.yml automates post-publish verification across PyPI, Docker, Helm, and GitHub Releases via workflow_run triggers
+-> Java nested classes indexed under bare qualified_name; two same-named nested classes silently overwrote each other's parent_id
+-> Rust functions inside mod inner lost their module scope in qualified_name, colliding with same-named functions elsewhere in the file
+-> federation's make_scip_symbol_id() omitted file_path from its hash, so two files' identical def main() collided and one row got silently dropped
+-> v3.2.5: local embedder told the frozen PyInstaller binary to pip install, advice the binary can't act on since it never reads the host's Python env
+
+4,353 unit tests pass, plus a new real-subprocess and real-wheel-install E2E suite that exercises the shipped artifacts directly, not just src/.
+
+MIT licensed. GitHub: https://github.com/sairam0424/trelix
+
+Full writeup: https://sairam0000.substack.com/p/trelix-v322-to-v325-the-source-tree?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
