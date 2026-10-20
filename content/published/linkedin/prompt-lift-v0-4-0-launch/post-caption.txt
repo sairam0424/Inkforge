@@ -1,0 +1,30 @@
+Launching my first Claude Code mod, prompt-lift v0.4.0: one button above the prompt box that rewrites a vague draft from the CLAUDE.md and skills your session already loaded, shows the dollars on the band, and gives you the original back on Undo.
+
+What it does:
+
+-> Install from inside a session: /plugin install prompt-lift --marketplace sairam0424/claude-prompt-lift
+-> The committed demo press: draft "fix the login bug", done row "fable · 0 cached · 12.3k in · 144 out · $0.18 · +42 words"
+-> Four free pre-guards refuse before any model call: slash or shell lines, reply-shaped drafts, under 3 words, over 4000 characters
+-> A paid answer is not auto-accepted: a 14-step pass can refuse it with "rewrite too long", "rewrite dropped too much", "added a command or link you did not write" or "named a file that does not exist, kept your prompt"
+-> Spend caps refuse before the call (/prompt-lift cap 2.50); the test is named "a press at the session cap is refused before any call and records nothing"
+-> Chain fable, sonnet, haiku; every rung is billed: a press that fell through Fable to Sonnet is priced as both. Unpriced models show $?, never $0
+-> Undo restores your draft; on a box you edited since Enhance it refuses once and asks you to press again within 10 s
+-> /prompt-lift preview <draft> shows what a press would send, no model call; /prompt-lift probe says whether your account can reach each rung
+-> One outbound call per press on your own model access; no http.fetch, process.run or timers in the hooks. Instruction files do travel with their absolute paths
+-> Honest gap: v0.4.0 shipped two bugs, both found by the catalogue maintainer within a day: a sub-project CLAUDE.md ignored instructionExclude, and two presses in the same instant could drop one from the day ledger. 0.4.1 fixes the first and half of the second; the cross-session race is open and the catalogue PR is blocked.
+
+Four days, 130 commits, 329 test cases at tag v0.4.0 (commit 1aa0b4f); the one demo press on record cost $0.18.
+
+prompt-lift (MIT). The 24-second launch film is attached to this post and to the v0.4.0 release.
+
+Where it lives today (all checked 2026-10-20):
+GitHub (public; main is 0.4.1; 0 stars, 0 forks, 0 issues): https://github.com/sairam0424/claude-prompt-lift
+Release v0.4.0 (launch; 24 s film attached): https://github.com/sairam0424/claude-prompt-lift/releases/tag/v0.4.0
+Release v0.4.1 (latest; the two fixes): https://github.com/sairam0424/claude-prompt-lift/releases/tag/v0.4.1
+Catalogue seed PR (open; changes requested): https://github.com/karanb192/awesome-claude-code-mods/pull/341
+Not yet listed: mods.aidojo.si (404); Anthropic plugin directory (not applied for; paid plan needed)
+
+Full writeup: https://sairam0000.substack.com/p/prompt-lift-v040-a-claude-code-mod
+Dev.to: https://dev.to/sai_ram_0000/prompt-lift-v040-a-claude-code-mod-that-turns-a-vague-prompt-into-a-specific-one-before-you-send-1gkg
+
+#ClaudeCode #DeveloperTools #AI

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-10-20
+
+### Added
+
+#### Content pipeline
+- prompt-lift v0.4.0 launch article: the first write-up of the owner's Claude Code mod (sairam0424/claude-prompt-lift), produced by a 15-agent dynamic workflow against the repository at tag v0.4.0, with the real demo GIF and launch film embedded and five verified GIFs — Dev.to and Substack live, LinkedIn single post with the launch film attached (#72)
+
 ## [0.1.5] - 2026-10-11
 
 ### Fixed
@@ -170,7 +177,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Conventional Commits enforced
 - Branching strategy: `main` (releases) ← `develop` (integration) ← `feature/*`
 
-[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/sairam0424/Inkforge/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/sairam0424/Inkforge/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/sairam0424/Inkforge/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/sairam0424/Inkforge/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/sairam0424/Inkforge/compare/v0.1.2...v0.1.3

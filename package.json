@@ -1,6 +1,6 @@
 {
   "name": "inkforge",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "description": "AI article generator: notes, a topic or code in, Markdown articles out, cross-posted to Dev.to, Medium and Hashnode",
   "engines": {
