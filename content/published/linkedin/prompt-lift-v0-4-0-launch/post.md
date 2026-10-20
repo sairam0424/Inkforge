@@ -3,7 +3,7 @@ slug: prompt-lift-v0-4-0-launch
 platform: linkedin
 type: text-post
 status: live
-published_url: ""
+published_url: "https://www.linkedin.com/feed/update/urn:li:ugcPost:7518366775785447424/"
 published_date: 2026-10-20
 chars: 2958
 ---
@@ -12,7 +12,7 @@ chars: 2958
 
 ## Status
 
-Posted by the owner on 2026-10-20 (evening IST) with the hook line below, the live Dev.to and Substack URLs, and the v2 launch film `brag.mp4` attached as native video. The post URL was not captured at posting time; `published_url` stays empty until the owner provides it.
+Posted by the owner on 2026-10-20 (evening IST) with the hook line below, the live Dev.to and Substack URLs, and the v2 launch film `brag.mp4` attached as native video. Post URL recorded 2026-10-20 (owner-supplied): https://www.linkedin.com/feed/update/urn:li:ugcPost:7518366775785447424/
 
 ## Post text
 
