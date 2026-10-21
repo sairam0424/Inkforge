@@ -21,7 +21,11 @@
     "typescript": "^5.8.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": ["pnpm run lint --"],
-    "*.md": ["echo"]
+    "*.{ts,tsx,js,jsx}": [
+      "pnpm run lint --"
+    ],
+    "*.md": [
+      "echo"
+    ]
   }
 }
