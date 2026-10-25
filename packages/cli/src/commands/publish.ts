@@ -105,8 +105,11 @@ function parseFrontmatter(md: string): Record<string, unknown> {
         .split(",")
         .map((s) => s.trim().replace(/^"(.*)"$/, "$1"))
         .filter(Boolean);
+    } else if (raw.startsWith('"') && raw.endsWith('"')) {
+      // emit.ts escapes embedded quotes as \" — unescape them back on read
+      result[key] = raw.slice(1, -1).replace(/\\"/g, '"');
     } else {
-      result[key] = raw.replace(/^"(.*)"$/, "$1");
+      result[key] = raw;
     }
   }
   result["body"] = md.replace(/^---\n[\s\S]*?\n---\n/, "").trim();
