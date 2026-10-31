@@ -3,11 +3,12 @@ slug: tracehub-mcp-cost-guard-mcp-upgrade-defaults
 title: "Upgrading tracehub-mcp 0.13 and cost-guard-mcp 0.6: the defaults I changed and what to set"
 platform: substack
 status: live
-published_url: https://sairam0000.substack.com/p/upgrading-tracehub-mcp-013-and-cost?r=2xzeyx&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
-published_date: 2026-11-01
+published_url: https://sairam0000.substack.com/p/upgrading-tracehub-mcp-013-and-cost
+published_date: 2026-10-31
 canonical_url: https://dev.to/sai_ram_0000/upgrading-tracehub-mcp-013-and-cost-guard-mcp-06-the-defaults-i-changed-and-what-to-set-39bb
 publish_note: |
-  Published by the owner on Substack at 2026-10-31T18:39:10Z (2026-11-01 00:09 IST), audience everyone, subtitle "mcp-smiths new release". Verified from the public Substack API on 2026-11-01: same six headings, five images, no tables, no leftover placeholder. The live post has no "Originally published at" line pointing to Dev.to (the file below had one); Substack has no canonical field, so Dev.to is canonical only by being first. Clean URL for sharing: https://sairam0000.substack.com/p/upgrading-tracehub-mcp-013-and-cost
+  Published by the owner on Substack at 2026-10-31T18:39:10Z (2026-11-01 00:09 IST; published_date above is the UTC date), audience everyone, subtitle "mcp-smiths new release". The share link the owner sent carried a referral id and tracking parameters (r=, utm_campaign, utm_medium, showWelcomeOnShare); the clean URL above is the one used in the LinkedIn captions. canonical_url here is the intended canonical (Dev.to); Substack has no canonical field, and the live post's own canonical is its Substack URL, so Dev.to is canonical only by being first.
+  KNOWN DEFECT in the live post, found by an independent check of the public Substack API on 2026-11-01: the live text is the Dev.to body, not the text in this file. It has the same six headings, five images (re-hosted by Substack) and no leftover placeholder, but its two tables are flattened into two run-on paragraphs ("Setting changedBeforeNowOpt-out or fix...", "Release and settingBeforeNowOpt-out or fix..."), the sentences "the table covers the other ten" and "The evidence for this table" still refer to tables, and it has no "Originally published at" line. The body below is the list-form text written for Substack (tables converted to Before/Now/Opt-out lines, "the list below covers the other ten"); it is the replacement text, not a copy of what is live. To fix the live post, paste the body below over it. Not done: the owner publishes to Substack.
 ---
 
 Start tracehub-mcp 0.13.0 or later with `--transport http --host 0.0.0.0` and no token, and it exits with status 2. Call cost-guard-mcp 0.6.0's `run_query_bounded` on a query that returns 1500 rows without `max_rows`, and it returns `status: refused` with the first 1000 rows, after the query has run. The changelog calls that a billed execution, and I saw it only against a fake BigQuery client in the same process with network access blocked. Both are defaults I changed in response to an agent-run audit, and both have an opt-out.
@@ -160,5 +161,3 @@ The gap shows in the responses. With `MAX_TRACES_PER_QUERY=2`, `limit=100` retur
 ![Two hands press a black self-inking stamp down onto a printed form on a table, then lift it away.](https://media1.giphy.com/media/ibeDch0qflnPhb7CXm/giphy.gif)
 
 If an upgrade breaks a setup this article did not cover, open an issue on github.com/mcpsmiths/tracehub-mcp or github.com/mcpsmiths/cost-guard-mcp with the version and the exact error text.
-
-Originally published at https://dev.to/sai_ram_0000/upgrading-tracehub-mcp-013-and-cost-guard-mcp-06-the-defaults-i-changed-and-what-to-set-39bb
