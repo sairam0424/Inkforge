@@ -1,0 +1,26 @@
+New versions: tracehub-mcp 0.13.1 and cost-guard-mcp 0.6.0. My earlier article covered tracehub-mcp 0.12.3 and cost-guard-mcp 0.3.3.
+
+Neither server gained a tool: tracehub-mcp still has 19, cost-guard-mcp still has 4. What changed is controls, limits and fields.
+
+tracehub-mcp 0.12.3 to 0.13.1
+- Bearer auth for the streamable-HTTP /mcp endpoint: set MCP_HTTP_BEARER_TOKEN (32+ printable ASCII characters). No or wrong token gets 401, /health stays open.
+- The listener binds 127.0.0.1 by default. A non-loopback bind without a token exits with status 2 unless MCP_ALLOW_UNAUTHENTICATED_HTTP=true is set.
+- Host header validation on loopback (a foreign Host gets 421, MCP_ALLOWED_HOSTS adjusts it).
+- Backend responses over 64 MiB decoded are rejected (BACKEND_MAX_RESPONSE_BYTES). Redirects to another scheme, host or port are refused.
+- Filters are validated: unknown keys and badly typed operands are rejected instead of ignored.
+- 0.13.1 raises dependency floors (fastmcp>=4.1.3). A fresh 0.13.0 install resolved fastmcp 4.0.11 with two advisories.
+
+cost-guard-mcp 0.3.3 to 0.6.0
+- One SQL statement per call and read statements only, by default. Opt-outs: COST_GUARD_ALLOW_MULTI_STATEMENT_SQL=1 and COST_GUARD_ALLOW_WRITE_STATEMENTS=1.
+- An omitted max_rows means 1000, results are capped at 8 MiB, and every result carries an executed boolean.
+- BigQuery: the dollar cap is also sent to the provider as maximumBytesBilled.
+- Snowflake: only SNOWFLAKE_ROLE is active, and setting it to ACCOUNTADMIN, SECURITYADMIN or ORGADMIN is refused.
+- COST_GUARD_MAX_IN_FLIGHT_QUERIES (default 8) caps concurrent run_query_bounded calls.
+- check_credentials and estimate_query_cost no longer start a stopped Databricks warehouse or resume a suspended Snowflake one unless COST_GUARD_DATABRICKS_ALLOW_WAREHOUSE_START or COST_GUARD_SNOWFLAKE_ALLOW_WAREHOUSE_RESUME is true.
+
+https://github.com/mcpsmiths/tracehub-mcp
+https://github.com/mcpsmiths/cost-guard-mcp
+Substack: https://sairam0000.substack.com/p/upgrading-tracehub-mcp-013-and-cost
+Dev.to: https://dev.to/sai_ram_0000/upgrading-tracehub-mcp-013-and-cost-guard-mcp-06-the-defaults-i-changed-and-what-to-set-39bb
+
+#MCP #OpenSource

@@ -1,0 +1,22 @@
+tracehub-mcp 0.13.0 and later exits with status 2 if you start it with --transport http --host 0.0.0.0 and no bearer token. Before 0.13.0 that listener defaulted to 0.0.0.0 with no authentication.
+
+I maintain tracehub-mcp and cost-guard-mcp in the mcpsmiths org. After an audit of my own code on 2026-10-12 I changed defaults in both, and did not write an upgrade note at the time. The article is that note.
+
+An agent harness ran the audit (Cloudflare's open-source security-audit-skill). Agents drafted the fixes and re-verified them. I decided what to change and merged.
+
+What to set on tracehub-mcp: MCP_HTTP_BEARER_TOKEN, 32 or more printable characters, for any non-loopback bind. BACKEND_API_KEY instead of user:password@host in BACKEND_URL, which now fails at startup with exit 1. MCP_ALLOW_UNAUTHENTICATED_HTTP=true restores the old behaviour. A loopback bind with no token still starts, with a warning.
+
+cost-guard-mcp 0.6.0 treats an omitted max_rows as 1000. Against a fake BigQuery client, a query returning 1500 rows came back status refused with the first 1000 rows and executed true. The check runs after the query, and the changelog calls that a billed execution. I saw it only against fakes.
+
+cost-guard does not refuse an uncapped query. There is no default spend limit unless you pass max_estimated_cost_usd or max_bytes_billed.
+
+What I have not proven: the tracehub HTTP listener has no TLS, so the token crosses the wire in cleartext unless a proxy terminates it (issue 51, open). I do not consider 0.13.x shown to be safe. No live Snowflake run has passed on cost-guard 0.4.0 to 0.6.0, and Databricks has never had one.
+
+https://github.com/mcpsmiths/tracehub-mcp
+https://github.com/mcpsmiths/cost-guard-mcp
+Full writeup: https://sairam0000.substack.com/p/upgrading-tracehub-mcp-013-and-cost
+Dev.to: https://dev.to/sai_ram_0000/upgrading-tracehub-mcp-013-and-cost-guard-mcp-06-the-defaults-i-changed-and-what-to-set-39bb
+
+If an upgrade breaks a setup the article does not cover, open an issue on either repo with the version and the exact error text.
+
+#MCP #OpenSource
