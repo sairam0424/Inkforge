@@ -1,0 +1,30 @@
+Claude Code's auto memory can keep a note saying deploys run on Tuesdays long after they moved to Thursdays.
+
+memory-arborist 0.1.2 is a public beta plugin that drafts fixes for such notes from your past terminal sessions, checks each one with a verifier that can be wrong, and shows you a diff. Promote applies the edits after your yes, and restoring a snapshot undoes them.
+
+The README labels the free half stable (including snapshots, restore, lint, a secret scan and the doctor, a setup check) and the half that calls a model experimental.
+
+The README reports two live runs on a synthetic memory with eight planted stale facts: five notes fixed, three deferred to the next run by the ten-hunk cap. It does not say both gave that split. "Fixed" meant an accepted hunk for the note contained the new value as a case-insensitive substring; nobody graded wording. How often it proposes an edit you would reject on real notes has not been measured.
+
+The attached 84-second video is real output from a separate run on a synthetic memory: 21 edits proposed, 10 staged, 6 notes promoted, 3 of the 8 stale facts fixed. The recall check's noise limit was exceeded on the live check (5 answer flips against a limit of 2), so I would not lean on its zero regressions.
+
+A match on one of 19 block-tier secret shapes refuses the run with exit 4 before note text is sent, and a flag overrides that for one run. A secret with no recognisable shape passes. Note text goes to your claude tool's provider; the writeup lists what I know leaves your machine.
+
+A hook makes Claude Code ask before promote --apply, restore --apply and any memory_* script run with --allow-secret-shapes. It is not a sandbox. Headless runs on Claude Code 2.1.325 to 2.1.327 refused the gated commands, because a headless ask counts as a refusal. The prompt as a person sees it, auto mode and an interactive bypass session are untested.
+
+Install (macOS or Linux, Python 3.11+; tested only through Amazon Bedrock):
+
+claude plugin marketplace add sairam0424/memory-arborist#stable
+claude plugin install memory-arborist@memory-arborist
+
+Run the doctor first. Linux is untested by hand. Then, in the project you want to tidy, type /memory-arborist:tend.
+
+What I most want to hear: how the confirmation prompt looks to a person in default, accept-edits, auto and bypass modes. Reply here, or open an issue with the doctor's output. Security problems: use the Security contact request issue form, not a public issue.
+
+memory-arborist is an independent project. It is not made, endorsed or supported by Anthropic.
+
+Repo: https://github.com/sairam0424/memory-arborist
+Writeup: https://sairam0000.substack.com/p/memory-arborist-012-a-propose-only
+Dev.to: https://dev.to/sai_ram_0000/memory-arborist-012-a-propose-only-clean-up-for-claude-code-memory-1db2
+
+#ClaudeCode #OpenSource
