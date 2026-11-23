@@ -1,0 +1,24 @@
+Two open-source MCP servers from mcpsmiths, both live today: cost-guard-mcp and tracehub-mcp.
+
+
+tracehub-mcp gives AI assistants a direct MCP query interface into OpenTelemetry and LLM trace data, replacing copy-pasting trace JSON into a chat window:
+
+-> Grew from 3 inherited backends to 5 -- Datadog and Sentry are new, full implementations, not thin wrappers
+
+-> Both new backends are HTTPS-only, escape and allowlist every query field, and reject malformed data outright instead of fabricating placeholders
+-> Use it today: uvx tracehub-mcp, point it at your Jaeger endpoint with --backend jaeger --url, no install step
+-> Add to Claude Code: claude mcp add tracehub-mcp -e BACKEND_TYPE=jaeger -e BACKEND_URL=<your-jaeger-url> -- uvx tracehub-mcp
+
+467 tests passing, 87 percent coverage
+
+cost-guard-mcp gives AI agents pre-flight cost and byte estimates for BigQuery and Snowflake queries, so a scan gets flagged before it runs, not after the bill shows up:
+
+-> Every estimate carries a required accuracy_tier -- PRECISE (BigQuery dry-run) vs UPPER_BOUND (Snowflake EXPLAIN, a ceiling not a measurement) -- never one bare trustworthy-looking number
+
+-> Fails closed: refuses to run rather than execute uncapped when it can't produce a confident cost figure
+-> Use it today: uvx cost-guard-mcp, no install step
+-> Add to Claude Code: claude mcp add cost-guard-mcp -e GOOGLE_APPLICATION_CREDENTIALS=<your-service-account-path> -- uvx cost-guard-mcp
+
+-> Zero infrastructure, 60 tests passing, live on PyPI
+
+MIT (cost-guard-mcp) and Apache 2.0 (tracehub-mcp). Both repos and both full writeups linked in the first comment.
