@@ -10,11 +10,12 @@ tags: ["claudecode","ai","testing","opensource"]
 note: "Written 2026-11-25 from the public repository at tag v0.2.4 (c86ef68), the six GitHub release notes and the public PRs and issue 25. No private run reports or employer material were used."
 publish_note: |
   LIVE since 2026-11-25 17:04 UTC (22:34 IST), Dev.to id 5117242, four Giphy GIFs (see assets/gifs-plan.md). Created as a draft with the Inkforge CLI, updated with PUT /api/articles/5117242, then published with PUT {article:{published:true}}. Edit later ONLY with PUT /api/articles/5117242; never re-run publish (it creates a new post). Re-running assemble.py write overwrites this file and drops these fields. canonical_url is Dev.to itself (no mirror).
+  2026-11-26: two body sentences reworded to the Not-Humans lead ("a Not-Humans skill for Claude Code", "the Not-Humans collection of Claude Code skills") with PUT /api/articles/5117242 (body only; title, tags, URL and published state unchanged; checked afterwards: live body equals this record). The Substack copy still has the old two sentences and must be edited by hand.
 ---
 
-nh-chaos-monkey 0.2.4 is a Claude Code skill in which agents try to break one module of code you own, inside a throwaway git worktree, and then try to fix what they confirm. You decide what gets merged. It executes your project's code, and nobody but me has run it.
+nh-chaos-monkey 0.2.4 is a Not-Humans skill for Claude Code in which agents try to break one module of code you own, inside a throwaway git worktree, and then try to fix what they confirm. You decide what gets merged. It executes your project's code, and nobody but me has run it.
 
-nh-chaos-monkey is the only skill in nh-skills so far, a collection of Claude Code Agent Skills. It is licensed Apache-2.0.
+nh-chaos-monkey is the only skill in nh-skills so far, the Not-Humans collection of Claude Code skills. It is licensed Apache-2.0.
 
 Use it when you have a module with a real test command and want to know what that suite does not catch. It will not help with faults in running services or networks, production or third-party code, or runs where nobody confirmed the contract.
 
