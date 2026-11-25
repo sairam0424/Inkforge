@@ -1,0 +1,25 @@
+First user release of the Not-Humans skills (nh-skills): nh-chaos-monkey, a Claude Code skill that tries to break code you own, in a throwaway git worktree.
+
+The worktree shares your .git, so a chaos/* branch, refs and stash entries land in your repo. --lead-only makes no code changes but still runs your tests. Despite the name, it does not kill servers or inject faults into running services.
+
+A break counts only if its reproducer fails twice, a confirming agent quotes the line where it runs your code and finds no document of yours that accepts the behaviour. The script checks only that the quote (and, when a document is said to accept the behaviour, a document reference) is present, so read each reproducer. A fix needs a regression test that fails before the fix and a fresh agent's re-check against your own test command. You decide what gets merged.
+
+How I use it: before a release I run it in a loop until it reports no confirmed break. I did that for trelix and MindForge, and for this release on nh-skills itself (dogfood).
+
+What the README records, from the earlier v0.2.2 plugin and not this release: in 22 sandboxed sessions on eight of my own projects, 12 sessions committed 20 fixes. Fresh AI agents rated them 2 sound, 15 sound with notes, 2 doubtful and 1 wrong. I merged none of them, and one Mac with one maintainer's projects shows behaviour, not a rate.
+
+Limits: it executes your project's code and tests, so run it in a sandbox that denies credential reads and network access. Its instructions tell the session not to push or merge, but a prompt cannot enforce that; only a sandbox limits what its shell commands can reach, and you also have to deny credential reads for the file tools. Nobody but me has run it yet, and an interactive sandboxed session is untested. No human has audited it. In my 22 sandboxed sessions a lead-only run cost about $1.3 to $1.6 and a fixing run of one or two rounds $1.6 to $5.0. The interactive default caps allow up to 18 fixes, so set a spending limit.
+
+Install as a Claude Code plugin (it follows the default branch, and the article shows how to pin this release; it runs as /nh-chaos-monkey:nh-chaos-monkey):
+/plugin install nh-chaos-monkey --marketplace sairam0424/nh-skills
+
+Needs macOS or Linux (every live run was on one Mac), git 2.31 or newer, Node.js 20 or newer and a Claude Code release with dynamic workflows turned on (2.1.275 or newer for the in-session one-command plugin install above).
+
+What I most want to hear: a --lead-only run on one small module you own, inside a sandbox, and where the setup broke or which confirmed break was wrong. The repo has a tester report issue form.
+
+nh-skills is an independent project. It is not made, endorsed or supported by Anthropic.
+
+Repo: https://github.com/sairam0424/nh-skills
+Writeup: https://dev.to/sai_ram_0000/nh-chaos-monkey-024-agents-try-to-break-one-module-in-a-git-worktree-2a7a
+
+#ClaudeCode #OpenSource
